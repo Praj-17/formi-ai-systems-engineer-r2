@@ -494,8 +494,11 @@ class AgentController:
     
     def _respond_to_bad_caller_id(self, wf_id: str, degraded_dids: List[str]):
         """Rotate away from degraded caller IDs."""
+        print(f"    [RESPONSE] _respond_to_bad_caller_id called for {wf_id}, degraded: {degraded_dids}")
+        
         # Skip if already pending approval
         if self.state.get_pending_approval(wf_id):
+            print(f"    [RESPONSE] Skipping - pending approval exists")
             return
         
         workflow = self.workflows[wf_id]

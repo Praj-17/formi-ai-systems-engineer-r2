@@ -1,0 +1,1244 @@
+Bootstrapping from history...
+Bootstrapped from 1 history chunks
+Starting controller...
+
+=== 2027-01-04T01:00:00+05:30 (tick 1) ===
+  [DEBUG] nw_renewal caller_id_stats: {'D1': (6675, 24612), 'D2': (6602, 24188)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1', 'D2']
+  [DEBUG] Median pickup rate: 0.273
+  [DEBUG] D1: rate=0.271, drop=0.6%
+  [DEBUG] D2: rate=0.273, drop=0.0%
+  [DEBUG] Degraded caller IDs: []
+  [DEBUG] Checking decay for nw_renewal, allocations: {'welcome_message': {'W1': 1.0}, 'voice': {'V1': 1.0}, 'caller_id': {'D1': 0.5, 'D2': 0.5}}
+  [DEBUG] voice=V1 weight=1.0
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(33, 250), recent_stats=(18, 200)
+    [DEBUG] No decay detected
+  [DEBUG] welcome_message=W1 weight=1.0
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(33, 250), recent_stats=(18, 200)
+    [DEBUG] No decay detected
+  [INCIDENT] Hallucination spike: 0.020 (+0.003 vs baseline)
+    Proposed prompt fix: P3 (approval: apr_00001)
+  [DEBUG] nw_kyc caller_id_stats: {'D1': (7124, 27199)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1']
+  [DEBUG] Checking decay for nw_kyc, allocations: {'welcome_message': {'W1': 1.0}, 'voice': {'V1': 1.0}, 'caller_id': {'D1': 1.0}}
+  [DEBUG] voice=V1 weight=1.0
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(66, 250), recent_stats=(46, 200)
+    [DEBUG] No decay detected
+  [DEBUG] welcome_message=W1 weight=1.0
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(66, 250), recent_stats=(46, 200)
+    [DEBUG] No decay detected
+  [DEBUG] ks_cancel caller_id_stats: {'D1': (8275, 32512), 'D2': (8258, 32497)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1', 'D2']
+  [DEBUG] Median pickup rate: 0.255
+  [DEBUG] D1: rate=0.255, drop=0.0%
+  [DEBUG] D2: rate=0.254, drop=0.2%
+  [DEBUG] Degraded caller IDs: []
+  [DEBUG] Checking decay for ks_cancel, allocations: {'welcome_message': {'W1': 1.0}, 'voice': {'V1': 1.0}, 'caller_id': {'D1': 0.5, 'D2': 0.5}}
+  [DEBUG] voice=V1 weight=1.0
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(27, 250), recent_stats=(24, 200)
+    [DEBUG] No decay detected
+  [DEBUG] welcome_message=W1 weight=1.0
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(27, 250), recent_stats=(24, 200)
+    [DEBUG] No decay detected
+
+=== 2027-01-04T02:00:00+05:30 (tick 2) ===
+
+=== 2027-01-04T03:00:00+05:30 (tick 3) ===
+
+=== 2027-01-04T04:00:00+05:30 (tick 4) ===
+
+=== 2027-01-04T05:00:00+05:30 (tick 5) ===
+
+=== 2027-01-04T06:00:00+05:30 (tick 6) ===
+
+=== 2027-01-04T07:00:00+05:30 (tick 7) ===
+
+=== 2027-01-04T08:00:00+05:30 (tick 8) ===
+
+=== 2027-01-04T09:00:00+05:30 (tick 9) ===
+
+=== 2027-01-04T10:00:00+05:30 (tick 10) ===
+
+=== 2027-01-04T11:00:00+05:30 (tick 11) ===
+  Approval rejected for nw_kyc: ['approver declined (judgement call)']
+
+=== 2027-01-04T12:00:00+05:30 (tick 12) ===
+
+=== 2027-01-04T13:00:00+05:30 (tick 13) ===
+
+=== 2027-01-04T14:00:00+05:30 (tick 14) ===
+
+=== 2027-01-04T15:00:00+05:30 (tick 15) ===
+
+=== 2027-01-04T16:00:00+05:30 (tick 16) ===
+
+=== 2027-01-04T17:00:00+05:30 (tick 17) ===
+
+=== 2027-01-04T18:00:00+05:30 (tick 18) ===
+
+=== 2027-01-04T19:00:00+05:30 (tick 19) ===
+
+=== 2027-01-04T20:00:00+05:30 (tick 20) ===
+
+=== 2027-01-04T21:00:00+05:30 (tick 21) ===
+
+=== 2027-01-04T22:00:00+05:30 (tick 22) ===
+
+=== 2027-01-04T23:00:00+05:30 (tick 23) ===
+
+=== 2027-01-05T00:00:00+05:30 (tick 24) ===
+  [EXPERIMENT] Running experiments for nw_renewal
+    voice: current={'V1': 1.0}, candidates=['V1', 'V2', 'V3', 'V4']
+    Proposed exploration: voice+V3 (approval: apr_00002)
+  [EXPERIMENT] Running experiments for nw_kyc
+    voice: current={'V1': 1.0}, candidates=['V1', 'V2']
+    Proposed exploration: voice+V2 (approval: apr_00003)
+  [EXPERIMENT] Running experiments for ks_cancel
+    voice: current={'V1': 1.0}, candidates=['V1', 'V2', 'V3', 'V4']
+    Auto-applied: added V3 to voice
+
+=== 2027-01-05T01:00:00+05:30 (tick 25) ===
+  [DEBUG] ks_cancel caller_id_stats: {'D1': (8879, 34936), 'D2': (8858, 34873)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1', 'D2']
+  [DEBUG] Median pickup rate: 0.254
+  [DEBUG] D1: rate=0.254, drop=0.0%
+  [DEBUG] D2: rate=0.254, drop=0.1%
+  [DEBUG] Degraded caller IDs: []
+  [DEBUG] Checking decay for ks_cancel, allocations: {'welcome_message': {'W1': 1.0}, 'voice': {'V1': 0.8, 'V3': 0.2}, 'caller_id': {'D1': 0.5, 'D2': 0.5}}
+  [DEBUG] voice=V1 weight=0.8
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(26, 250), recent_stats=(21, 200)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V3 weight=0.2
+  [DEBUG] welcome_message=W1 weight=1.0
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(26, 250), recent_stats=(21, 200)
+    [DEBUG] No decay detected
+
+=== 2027-01-05T02:00:00+05:30 (tick 26) ===
+
+=== 2027-01-05T03:00:00+05:30 (tick 27) ===
+
+=== 2027-01-05T04:00:00+05:30 (tick 28) ===
+
+=== 2027-01-05T05:00:00+05:30 (tick 29) ===
+
+=== 2027-01-05T06:00:00+05:30 (tick 30) ===
+
+=== 2027-01-05T07:00:00+05:30 (tick 31) ===
+
+=== 2027-01-05T08:00:00+05:30 (tick 32) ===
+
+=== 2027-01-05T09:00:00+05:30 (tick 33) ===
+
+=== 2027-01-05T10:00:00+05:30 (tick 34) ===
+
+=== 2027-01-05T11:00:00+05:30 (tick 35) ===
+  Applied approval apr_00002 for nw_renewal
+  Approval rejected for nw_kyc: ['approver declined (judgement call)']
+  [DEBUG] nw_renewal caller_id_stats: {'D1': (7214, 26701), 'D2': (7189, 26299)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1', 'D2']
+  [DEBUG] Median pickup rate: 0.273
+  [DEBUG] D1: rate=0.270, drop=1.2%
+  [DEBUG] D2: rate=0.273, drop=0.0%
+  [DEBUG] Degraded caller IDs: []
+  [DEBUG] Checking decay for nw_renewal, allocations: {'welcome_message': {'W1': 1.0}, 'voice': {'V1': 0.8, 'V3': 0.2}, 'caller_id': {'D1': 0.5, 'D2': 0.5}}
+  [DEBUG] voice=V1 weight=0.8
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(46, 250), recent_stats=(36, 200)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V3 weight=0.2
+  [DEBUG] welcome_message=W1 weight=1.0
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(46, 250), recent_stats=(36, 200)
+    [DEBUG] No decay detected
+  [INCIDENT] Hallucination spike: 0.020 (+0.020 vs baseline)
+    Proposed prompt fix: P3 (approval: apr_00004)
+  [DEBUG] nw_kyc caller_id_stats: {'D1': (7623, 29399)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1']
+  [DEBUG] Checking decay for nw_kyc, allocations: {'welcome_message': {'W1': 1.0}, 'voice': {'V1': 1.0}, 'caller_id': {'D1': 1.0}}
+  [DEBUG] voice=V1 weight=1.0
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(53, 250), recent_stats=(48, 200)
+    [DEBUG] No decay detected
+  [DEBUG] welcome_message=W1 weight=1.0
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(53, 250), recent_stats=(48, 200)
+    [DEBUG] No decay detected
+
+=== 2027-01-05T12:00:00+05:30 (tick 36) ===
+
+=== 2027-01-05T13:00:00+05:30 (tick 37) ===
+
+=== 2027-01-05T14:00:00+05:30 (tick 38) ===
+
+=== 2027-01-05T15:00:00+05:30 (tick 39) ===
+
+=== 2027-01-05T16:00:00+05:30 (tick 40) ===
+
+=== 2027-01-05T17:00:00+05:30 (tick 41) ===
+
+=== 2027-01-05T18:00:00+05:30 (tick 42) ===
+  Applied approval apr_00004 for nw_kyc
+  [EXPERIMENT] Running experiments for nw_renewal
+    voice: current={'V1': 0.8, 'V3': 0.2}, candidates=['V1', 'V2', 'V3', 'V4']
+    Proposed exploration: voice+V4 (approval: apr_00005)
+  [EXPERIMENT] Running experiments for nw_kyc
+    voice: current={'V1': 1.0}, candidates=['V1', 'V2']
+    Proposed exploration: voice+V2 (approval: apr_00006)
+  [EXPERIMENT] Running experiments for ks_cancel
+    voice: current={'V1': 0.8, 'V3': 0.2}, candidates=['V1', 'V2', 'V3', 'V4']
+    Auto-applied: added V4 to voice
+
+=== 2027-01-05T19:00:00+05:30 (tick 43) ===
+  Approval rejected for nw_renewal: ['approver declined (judgement call)']
+
+=== 2027-01-05T20:00:00+05:30 (tick 44) ===
+
+=== 2027-01-05T21:00:00+05:30 (tick 45) ===
+
+=== 2027-01-05T22:00:00+05:30 (tick 46) ===
+
+=== 2027-01-05T23:00:00+05:30 (tick 47) ===
+
+=== 2027-01-06T00:00:00+05:30 (tick 48) ===
+
+=== 2027-01-06T01:00:00+05:30 (tick 49) ===
+  [DEBUG] ks_cancel caller_id_stats: {'D1': (9450, 37348), 'D2': (9397, 37261)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1', 'D2']
+  [DEBUG] Median pickup rate: 0.253
+  [DEBUG] D1: rate=0.253, drop=0.0%
+  [DEBUG] D2: rate=0.252, drop=0.3%
+  [DEBUG] Degraded caller IDs: []
+  [DEBUG] Checking decay for ks_cancel, allocations: {'welcome_message': {'W1': 1.0}, 'voice': {'V1': 0.64, 'V3': 0.16, 'V4': 0.19999999999999996}, 'caller_id': {'D1': 0.5, 'D2': 0.5}}
+  [DEBUG] voice=V1 weight=0.64
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(11, 161), recent_stats=(5, 123)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V3 weight=0.16
+  [DEBUG] voice=V4 weight=0.19999999999999996
+  [DEBUG] welcome_message=W1 weight=1.0
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(20, 250), recent_stats=(13, 200)
+    [DEBUG] No decay detected
+
+=== 2027-01-06T02:00:00+05:30 (tick 50) ===
+
+=== 2027-01-06T03:00:00+05:30 (tick 51) ===
+
+=== 2027-01-06T04:00:00+05:30 (tick 52) ===
+
+=== 2027-01-06T05:00:00+05:30 (tick 53) ===
+
+=== 2027-01-06T06:00:00+05:30 (tick 54) ===
+
+=== 2027-01-06T07:00:00+05:30 (tick 55) ===
+
+=== 2027-01-06T08:00:00+05:30 (tick 56) ===
+
+=== 2027-01-06T09:00:00+05:30 (tick 57) ===
+
+=== 2027-01-06T10:00:00+05:30 (tick 58) ===
+
+=== 2027-01-06T11:00:00+05:30 (tick 59) ===
+  Approval rejected for nw_kyc: ['approver fatigue: more than 2 requests in 24h for this workflow — batch your changes']
+  [INCIDENT] Hallucination spike: 0.059 (+0.016 vs baseline)
+    Proposed prompt fix: P4 (approval: apr_00007)
+  [DEBUG] nw_renewal caller_id_stats: {'D1': (7713, 28537), 'D2': (7631, 28063)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1', 'D2']
+  [DEBUG] Median pickup rate: 0.272
+  [DEBUG] D1: rate=0.270, drop=0.6%
+  [DEBUG] D2: rate=0.272, drop=0.0%
+  [DEBUG] Degraded caller IDs: []
+  [DEBUG] Checking decay for nw_renewal, allocations: {'welcome_message': {'W1': 1.0}, 'voice': {'V1': 0.8, 'V3': 0.2}, 'caller_id': {'D1': 0.5, 'D2': 0.5}}
+  [DEBUG] voice=V1 weight=0.8
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(31, 200), recent_stats=(22, 160)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V3 weight=0.2
+  [DEBUG] welcome_message=W1 weight=1.0
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(44, 250), recent_stats=(26, 200)
+    [DEBUG] No decay detected
+  [INCIDENT] Hallucination spike: 0.020 (+0.020 vs baseline)
+    Proposed prompt fix: P1 (approval: apr_00008)
+  [DEBUG] nw_kyc caller_id_stats: {'D1': (8111, 31399)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1']
+  [DEBUG] Checking decay for nw_kyc, allocations: {'welcome_message': {'W1': 1.0}, 'voice': {'V1': 1.0}, 'caller_id': {'D1': 1.0}}
+  [DEBUG] voice=V1 weight=1.0
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(61, 250), recent_stats=(58, 200)
+    [DEBUG] No decay detected
+  [DEBUG] welcome_message=W1 weight=1.0
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(61, 250), recent_stats=(58, 200)
+    [DEBUG] No decay detected
+
+=== 2027-01-06T12:00:00+05:30 (tick 60) ===
+  [EXPERIMENT] Running experiments for nw_renewal
+    Skipping: pending approval
+  [EXPERIMENT] Running experiments for nw_kyc
+    Skipping: pending approval
+  [EXPERIMENT] Running experiments for ks_cancel
+    voice: current={'V1': 0.64, 'V3': 0.16, 'V4': 0.19999999999999996}, candidates=['V1', 'V2', 'V3', 'V4']
+    Auto-applied: added V2 to voice
+
+=== 2027-01-06T13:00:00+05:30 (tick 61) ===
+  Applied approval apr_00007 for nw_renewal
+
+=== 2027-01-06T14:00:00+05:30 (tick 62) ===
+
+=== 2027-01-06T15:00:00+05:30 (tick 63) ===
+
+=== 2027-01-06T16:00:00+05:30 (tick 64) ===
+
+=== 2027-01-06T17:00:00+05:30 (tick 65) ===
+
+=== 2027-01-06T18:00:00+05:30 (tick 66) ===
+
+=== 2027-01-06T19:00:00+05:30 (tick 67) ===
+  Applied approval apr_00008 for nw_kyc
+
+=== 2027-01-06T20:00:00+05:30 (tick 68) ===
+
+=== 2027-01-06T21:00:00+05:30 (tick 69) ===
+
+=== 2027-01-06T22:00:00+05:30 (tick 70) ===
+
+=== 2027-01-06T23:00:00+05:30 (tick 71) ===
+
+=== 2027-01-07T00:00:00+05:30 (tick 72) ===
+
+=== 2027-01-07T01:00:00+05:30 (tick 73) ===
+  [DEBUG] ks_cancel caller_id_stats: {'D1': (10042, 39759), 'D2': (9650, 39650)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1', 'D2']
+  [DEBUG] Median pickup rate: 0.253
+  [DEBUG] D1: rate=0.253, drop=0.0%
+  [DEBUG] D2: rate=0.243, drop=3.6%
+  [DEBUG] Degraded caller IDs: []
+  [DEBUG] Checking decay for ks_cancel, allocations: {'welcome_message': {'W1': 1.0}, 'voice': {'V1': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V2': 0.2}, 'caller_id': {'D1': 0.5, 'D2': 0.5}}
+  [DEBUG] voice=V1 weight=0.512
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(10, 132), recent_stats=(9, 111)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V3 weight=0.128
+  [DEBUG] voice=V4 weight=0.15999999999999998
+  [DEBUG] voice=V2 weight=0.2
+  [DEBUG] welcome_message=W1 weight=1.0
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(17, 250), recent_stats=(15, 200)
+    [DEBUG] No decay detected
+
+=== 2027-01-07T02:00:00+05:30 (tick 74) ===
+
+=== 2027-01-07T03:00:00+05:30 (tick 75) ===
+
+=== 2027-01-07T04:00:00+05:30 (tick 76) ===
+
+=== 2027-01-07T05:00:00+05:30 (tick 77) ===
+
+=== 2027-01-07T06:00:00+05:30 (tick 78) ===
+  [EXPERIMENT] Running experiments for nw_renewal
+    voice: current={'V1': 0.8, 'V3': 0.2}, candidates=['V1', 'V2', 'V3', 'V4']
+    Proposed exploration: voice+V4 (approval: apr_00009)
+  [EXPERIMENT] Running experiments for nw_kyc
+    voice: current={'V1': 1.0}, candidates=['V1', 'V2']
+    Proposed exploration: voice+V2 (approval: apr_00010)
+  [EXPERIMENT] Running experiments for ks_cancel
+    voice: current={'V1': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V2': 0.2}, candidates=['V1', 'V2', 'V3', 'V4']
+    welcome_message: current={'W1': 1.0}, candidates=['W1', 'W2', 'W3']
+    Auto-applied: added W2 to welcome_message
+
+=== 2027-01-07T07:00:00+05:30 (tick 79) ===
+
+=== 2027-01-07T08:00:00+05:30 (tick 80) ===
+
+=== 2027-01-07T09:00:00+05:30 (tick 81) ===
+
+=== 2027-01-07T10:00:00+05:30 (tick 82) ===
+
+=== 2027-01-07T11:00:00+05:30 (tick 83) ===
+  Approval rejected for nw_renewal: ['approver declined (judgement call)']
+  Applied approval apr_00010 for nw_kyc
+  [INCIDENT] Hallucination spike: 0.020 (+-0.010 vs baseline)
+    Proposed prompt fix: P1 (approval: apr_00011)
+  [DEBUG] nw_renewal caller_id_stats: {'D1': (8131, 30320), 'D2': (8142, 29880)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1', 'D2']
+  [DEBUG] Median pickup rate: 0.272
+  [DEBUG] D1: rate=0.268, drop=1.6%
+  [DEBUG] D2: rate=0.272, drop=0.0%
+  [DEBUG] Degraded caller IDs: []
+  [DEBUG] Checking decay for nw_renewal, allocations: {'welcome_message': {'W1': 1.0}, 'voice': {'V1': 0.8, 'V3': 0.2}, 'caller_id': {'D1': 0.5, 'D2': 0.5}}
+  [DEBUG] voice=V1 weight=0.8
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(32, 205), recent_stats=(28, 172)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V3 weight=0.2
+  [DEBUG] welcome_message=W1 weight=1.0
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(42, 250), recent_stats=(32, 200)
+    [DEBUG] No decay detected
+  [INCIDENT] Hallucination spike: 0.020 (+0.020 vs baseline)
+    Proposed prompt fix: P3 (approval: apr_00012)
+  [DEBUG] nw_kyc caller_id_stats: {'D1': (8569, 33399)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1']
+  [DEBUG] Checking decay for nw_kyc, allocations: {'welcome_message': {'W1': 1.0}, 'voice': {'V1': 0.8, 'V2': 0.2}, 'caller_id': {'D1': 1.0}}
+  [DEBUG] voice=V1 weight=0.8
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(53, 250), recent_stats=(61, 200)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V2 weight=0.2
+  [DEBUG] welcome_message=W1 weight=1.0
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(53, 250), recent_stats=(61, 200)
+    [DEBUG] No decay detected
+
+=== 2027-01-07T12:00:00+05:30 (tick 84) ===
+
+=== 2027-01-07T13:00:00+05:30 (tick 85) ===
+
+=== 2027-01-07T14:00:00+05:30 (tick 86) ===
+
+=== 2027-01-07T15:00:00+05:30 (tick 87) ===
+
+=== 2027-01-07T16:00:00+05:30 (tick 88) ===
+  Applied approval apr_00011 for nw_renewal
+  Applied approval apr_00012 for nw_kyc
+
+=== 2027-01-07T17:00:00+05:30 (tick 89) ===
+
+=== 2027-01-07T18:00:00+05:30 (tick 90) ===
+
+=== 2027-01-07T19:00:00+05:30 (tick 91) ===
+
+=== 2027-01-07T20:00:00+05:30 (tick 92) ===
+
+=== 2027-01-07T21:00:00+05:30 (tick 93) ===
+
+=== 2027-01-07T22:00:00+05:30 (tick 94) ===
+
+=== 2027-01-07T23:00:00+05:30 (tick 95) ===
+
+=== 2027-01-08T00:00:00+05:30 (tick 96) ===
+  [EXPERIMENT] Running experiments for nw_renewal
+    voice: current={'V1': 0.8, 'V3': 0.2}, candidates=['V1', 'V2', 'V3', 'V4']
+    Proposed exploration: voice+V4 (approval: apr_00013)
+  [EXPERIMENT] Running experiments for nw_kyc
+    voice: current={'V1': 0.8, 'V2': 0.2}, candidates=['V1', 'V2']
+    welcome_message: current={'W1': 1.0}, candidates=['W1', 'W2']
+    Proposed exploration: welcome_message+W2 (approval: apr_00014)
+  [EXPERIMENT] Running experiments for ks_cancel
+    voice: current={'V1': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V2': 0.2}, candidates=['V1', 'V2', 'V3', 'V4']
+    welcome_message: current={'W1': 0.8, 'W2': 0.2}, candidates=['W1', 'W2', 'W3']
+    Auto-applied: added W3 to welcome_message
+
+=== 2027-01-08T01:00:00+05:30 (tick 97) ===
+  [INCIDENT] Hallucination spike: 0.118 (+0.018 vs baseline)
+    Proposed prompt fix: P1 (approval: apr_00015)
+  [DEBUG] ks_cancel caller_id_stats: {'D1': (10640, 42154), 'D2': (9856, 42055)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1', 'D2']
+  [DEBUG] Median pickup rate: 0.252
+  [DEBUG] D1: rate=0.252, drop=0.0%
+  [DEBUG] D2: rate=0.234, drop=7.2%
+  [DEBUG] Degraded caller IDs: []
+  [DEBUG] Checking decay for ks_cancel, allocations: {'welcome_message': {'W1': 0.64, 'W2': 0.16, 'W3': 0.19999999999999996}, 'voice': {'V1': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V2': 0.2}, 'caller_id': {'D1': 0.5, 'D2': 0.5}}
+  [DEBUG] voice=V1 weight=0.512
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(4, 126), recent_stats=(4, 108)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V3 weight=0.128
+  [DEBUG] voice=V4 weight=0.15999999999999998
+  [DEBUG] voice=V2 weight=0.2
+  [DEBUG] welcome_message=W1 weight=0.64
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(17, 212), recent_stats=(11, 156)
+    [DEBUG] No decay detected
+  [DEBUG] welcome_message=W2 weight=0.16
+  [DEBUG] welcome_message=W3 weight=0.19999999999999996
+
+=== 2027-01-08T02:00:00+05:30 (tick 98) ===
+
+=== 2027-01-08T03:00:00+05:30 (tick 99) ===
+
+=== 2027-01-08T04:00:00+05:30 (tick 100) ===
+
+=== 2027-01-08T05:00:00+05:30 (tick 101) ===
+
+=== 2027-01-08T06:00:00+05:30 (tick 102) ===
+
+=== 2027-01-08T07:00:00+05:30 (tick 103) ===
+
+=== 2027-01-08T08:00:00+05:30 (tick 104) ===
+
+=== 2027-01-08T09:00:00+05:30 (tick 105) ===
+
+=== 2027-01-08T10:00:00+05:30 (tick 106) ===
+
+=== 2027-01-08T11:00:00+05:30 (tick 107) ===
+  Applied approval apr_00013 for nw_renewal
+  Approval rejected for nw_kyc: ['approver fatigue: more than 2 requests in 24h for this workflow — batch your changes']
+  Applied approval apr_00015 for ks_cancel
+  [DEBUG] nw_renewal caller_id_stats: {'D1': (8633, 32104), 'D2': (8615, 31696)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1', 'D2']
+  [DEBUG] Median pickup rate: 0.272
+  [DEBUG] D1: rate=0.269, drop=1.1%
+  [DEBUG] D2: rate=0.272, drop=0.0%
+  [DEBUG] Degraded caller IDs: []
+  [DEBUG] Checking decay for nw_renewal, allocations: {'welcome_message': {'W1': 1.0}, 'voice': {'V1': 0.64, 'V3': 0.16, 'V4': 0.19999999999999996}, 'caller_id': {'D1': 0.5, 'D2': 0.5}}
+  [DEBUG] voice=V1 weight=0.64
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(30, 202), recent_stats=(16, 151)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V3 weight=0.16
+  [DEBUG] voice=V4 weight=0.19999999999999996
+  [DEBUG] welcome_message=W1 weight=1.0
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(42, 250), recent_stats=(23, 200)
+    [DEBUG] No decay detected
+  [INCIDENT] Hallucination spike: 0.020 (+0.020 vs baseline)
+    Proposed prompt fix: P1 (approval: apr_00016)
+  [DEBUG] nw_kyc caller_id_stats: {'D1': (9055, 35399)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1']
+  [DEBUG] Checking decay for nw_kyc, allocations: {'welcome_message': {'W1': 1.0}, 'voice': {'V1': 0.8, 'V2': 0.2}, 'caller_id': {'D1': 1.0}}
+  [DEBUG] voice=V1 weight=0.8
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(44, 250), recent_stats=(52, 188)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V2 weight=0.2
+  [DEBUG] welcome_message=W1 weight=1.0
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(44, 250), recent_stats=(55, 200)
+    [DEBUG] No decay detected
+
+=== 2027-01-08T12:00:00+05:30 (tick 108) ===
+
+=== 2027-01-08T13:00:00+05:30 (tick 109) ===
+
+=== 2027-01-08T14:00:00+05:30 (tick 110) ===
+
+=== 2027-01-08T15:00:00+05:30 (tick 111) ===
+
+=== 2027-01-08T16:00:00+05:30 (tick 112) ===
+
+=== 2027-01-08T17:00:00+05:30 (tick 113) ===
+  Applied approval apr_00016 for nw_kyc
+
+=== 2027-01-08T18:00:00+05:30 (tick 114) ===
+  [EXPERIMENT] Running experiments for nw_renewal
+    voice: current={'V1': 0.64, 'V3': 0.16, 'V4': 0.19999999999999996}, candidates=['V1', 'V2', 'V3', 'V4']
+    Proposed exploration: voice+V2 (approval: apr_00017)
+  [EXPERIMENT] Running experiments for nw_kyc
+    voice: current={'V1': 0.8, 'V2': 0.2}, candidates=['V1', 'V2']
+    welcome_message: current={'W1': 1.0}, candidates=['W1', 'W2']
+    Proposed exploration: welcome_message+W2 (approval: apr_00018)
+  [EXPERIMENT] Running experiments for ks_cancel
+    voice: current={'V1': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V2': 0.2}, candidates=['V1', 'V2', 'V3', 'V4']
+    welcome_message: current={'W1': 0.64, 'W2': 0.16, 'W3': 0.19999999999999996}, candidates=['W1', 'W2', 'W3']
+    Analyzing voice for winners...
+    Analyzing welcome_message for winners...
+    No clear winners yet
+
+=== 2027-01-08T19:00:00+05:30 (tick 115) ===
+
+=== 2027-01-08T20:00:00+05:30 (tick 116) ===
+
+=== 2027-01-08T21:00:00+05:30 (tick 117) ===
+
+=== 2027-01-08T22:00:00+05:30 (tick 118) ===
+
+=== 2027-01-08T23:00:00+05:30 (tick 119) ===
+
+=== 2027-01-09T00:00:00+05:30 (tick 120) ===
+
+=== 2027-01-09T01:00:00+05:30 (tick 121) ===
+  [DEBUG] ks_cancel caller_id_stats: {'D1': (11226, 44564), 'D2': (10052, 44445)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1', 'D2']
+  [DEBUG] Median pickup rate: 0.252
+  [DEBUG] D1: rate=0.252, drop=0.0%
+  [DEBUG] D2: rate=0.226, drop=10.2%
+  [DEBUG] Degraded caller IDs: []
+  [DEBUG] Checking decay for ks_cancel, allocations: {'welcome_message': {'W1': 0.64, 'W2': 0.16, 'W3': 0.19999999999999996}, 'voice': {'V1': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V2': 0.2}, 'caller_id': {'D1': 0.5, 'D2': 0.5}}
+  [DEBUG] voice=V1 weight=0.512
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(5, 125), recent_stats=(11, 107)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V3 weight=0.128
+  [DEBUG] voice=V4 weight=0.15999999999999998
+  [DEBUG] voice=V2 weight=0.2
+  [DEBUG] welcome_message=W1 weight=0.64
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(8, 156), recent_stats=(7, 124)
+    [DEBUG] No decay detected
+  [DEBUG] welcome_message=W2 weight=0.16
+  [DEBUG] welcome_message=W3 weight=0.19999999999999996
+
+=== 2027-01-09T02:00:00+05:30 (tick 122) ===
+
+=== 2027-01-09T03:00:00+05:30 (tick 123) ===
+
+=== 2027-01-09T04:00:00+05:30 (tick 124) ===
+
+=== 2027-01-09T05:00:00+05:30 (tick 125) ===
+
+=== 2027-01-09T06:00:00+05:30 (tick 126) ===
+
+=== 2027-01-09T07:00:00+05:30 (tick 127) ===
+
+=== 2027-01-09T08:00:00+05:30 (tick 128) ===
+
+=== 2027-01-09T09:00:00+05:30 (tick 129) ===
+
+=== 2027-01-09T10:00:00+05:30 (tick 130) ===
+
+=== 2027-01-09T11:00:00+05:30 (tick 131) ===
+  Applied approval apr_00017 for nw_renewal
+  Approval rejected for nw_kyc: ['approver fatigue: more than 2 requests in 24h for this workflow — batch your changes']
+  [INCIDENT] Hallucination spike: 0.020 (+0.020 vs baseline)
+    Proposed prompt fix: P5 (approval: apr_00019)
+  [DEBUG] nw_renewal caller_id_stats: {'D1': (9089, 33899), 'D2': (9113, 33501)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1', 'D2']
+  [DEBUG] Median pickup rate: 0.272
+  [DEBUG] D1: rate=0.268, drop=1.4%
+  [DEBUG] D2: rate=0.272, drop=0.0%
+  [DEBUG] Degraded caller IDs: []
+  [DEBUG] Checking decay for nw_renewal, allocations: {'welcome_message': {'W1': 1.0}, 'voice': {'V1': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V2': 0.2}, 'caller_id': {'D1': 0.5, 'D2': 0.5}}
+  [DEBUG] voice=V1 weight=0.512
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(25, 166), recent_stats=(18, 139)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V3 weight=0.128
+  [DEBUG] voice=V4 weight=0.15999999999999998
+  [DEBUG] voice=V2 weight=0.2
+  [DEBUG] welcome_message=W1 weight=1.0
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(39, 250), recent_stats=(28, 200)
+    [DEBUG] No decay detected
+  [DEBUG] nw_kyc caller_id_stats: {'D1': (9526, 37399)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1']
+  [DEBUG] Checking decay for nw_kyc, allocations: {'welcome_message': {'W1': 1.0}, 'voice': {'V1': 0.8, 'V2': 0.2}, 'caller_id': {'D1': 1.0}}
+  [DEBUG] voice=V1 weight=0.8
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(45, 234), recent_stats=(47, 166)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V2 weight=0.2
+  [DEBUG] welcome_message=W1 weight=1.0
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(51, 250), recent_stats=(58, 200)
+    [DEBUG] No decay detected
+
+=== 2027-01-09T12:00:00+05:30 (tick 132) ===
+  [EXPERIMENT] Running experiments for nw_renewal
+    Skipping: pending approval
+  [EXPERIMENT] Running experiments for nw_kyc
+    voice: current={'V1': 0.8, 'V2': 0.2}, candidates=['V1', 'V2']
+    welcome_message: current={'W1': 1.0}, candidates=['W1', 'W2']
+    Proposed exploration: welcome_message+W2 (approval: apr_00020)
+  [EXPERIMENT] Running experiments for ks_cancel
+    voice: current={'V1': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V2': 0.2}, candidates=['V1', 'V2', 'V3', 'V4']
+    welcome_message: current={'W1': 0.64, 'W2': 0.16, 'W3': 0.19999999999999996}, candidates=['W1', 'W2', 'W3']
+    Analyzing voice for winners...
+    Analyzing welcome_message for winners...
+    No clear winners yet
+
+=== 2027-01-09T13:00:00+05:30 (tick 133) ===
+
+=== 2027-01-09T14:00:00+05:30 (tick 134) ===
+  Applied approval apr_00020 for nw_kyc
+
+=== 2027-01-09T15:00:00+05:30 (tick 135) ===
+  Applied approval apr_00019 for nw_renewal
+
+=== 2027-01-09T16:00:00+05:30 (tick 136) ===
+
+=== 2027-01-09T17:00:00+05:30 (tick 137) ===
+
+=== 2027-01-09T18:00:00+05:30 (tick 138) ===
+
+=== 2027-01-09T19:00:00+05:30 (tick 139) ===
+
+=== 2027-01-09T20:00:00+05:30 (tick 140) ===
+
+=== 2027-01-09T21:00:00+05:30 (tick 141) ===
+
+=== 2027-01-09T22:00:00+05:30 (tick 142) ===
+
+=== 2027-01-09T23:00:00+05:30 (tick 143) ===
+
+=== 2027-01-10T00:00:00+05:30 (tick 144) ===
+
+=== 2027-01-10T01:00:00+05:30 (tick 145) ===
+  [DEBUG] ks_cancel caller_id_stats: {'D1': (11851, 46972), 'D2': (10254, 46837)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1', 'D2']
+  [DEBUG] Median pickup rate: 0.252
+  [DEBUG] D1: rate=0.252, drop=0.0%
+  [DEBUG] D2: rate=0.219, drop=13.2%
+  [DEBUG] Degraded caller IDs: []
+  [DEBUG] Checking decay for ks_cancel, allocations: {'welcome_message': {'W1': 0.64, 'W2': 0.16, 'W3': 0.19999999999999996}, 'voice': {'V1': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V2': 0.2}, 'caller_id': {'D1': 0.5, 'D2': 0.5}}
+  [DEBUG] voice=V1 weight=0.512
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(9, 130), recent_stats=(11, 94)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V3 weight=0.128
+  [DEBUG] voice=V4 weight=0.15999999999999998
+  [DEBUG] voice=V2 weight=0.2
+  [DEBUG] welcome_message=W1 weight=0.64
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(8, 162), recent_stats=(9, 120)
+    [DEBUG] No decay detected
+  [DEBUG] welcome_message=W2 weight=0.16
+  [DEBUG] welcome_message=W3 weight=0.19999999999999996
+
+=== 2027-01-10T02:00:00+05:30 (tick 146) ===
+
+=== 2027-01-10T03:00:00+05:30 (tick 147) ===
+
+=== 2027-01-10T04:00:00+05:30 (tick 148) ===
+
+=== 2027-01-10T05:00:00+05:30 (tick 149) ===
+
+=== 2027-01-10T06:00:00+05:30 (tick 150) ===
+  [EXPERIMENT] Running experiments for nw_renewal
+    voice: current={'V2': 1.0}, candidates=['V1', 'V2', 'V3', 'V4']
+    Proposed exploration: voice+V3 (approval: apr_00021)
+  [EXPERIMENT] Running experiments for nw_kyc
+    voice: current={'V1': 0.8, 'V2': 0.2}, candidates=['V1', 'V2']
+    welcome_message: current={'W1': 0.8, 'W2': 0.2}, candidates=['W1', 'W2']
+    Analyzing voice for winners...
+    Analyzing welcome_message for winners...
+    No clear winners yet
+  [EXPERIMENT] Running experiments for ks_cancel
+    voice: current={'V1': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V2': 0.2}, candidates=['V1', 'V2', 'V3', 'V4']
+    welcome_message: current={'W1': 0.64, 'W2': 0.16, 'W3': 0.19999999999999996}, candidates=['W1', 'W2', 'W3']
+    Analyzing voice for winners...
+    Analyzing welcome_message for winners...
+    No clear winners yet
+
+=== 2027-01-10T07:00:00+05:30 (tick 151) ===
+
+=== 2027-01-10T08:00:00+05:30 (tick 152) ===
+
+=== 2027-01-10T09:00:00+05:30 (tick 153) ===
+
+=== 2027-01-10T10:00:00+05:30 (tick 154) ===
+
+=== 2027-01-10T11:00:00+05:30 (tick 155) ===
+  Applied approval apr_00021 for nw_renewal
+  [DEBUG] nw_renewal caller_id_stats: {'D1': (9573, 35690), 'D2': (9598, 35310)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1', 'D2']
+  [DEBUG] Median pickup rate: 0.272
+  [DEBUG] D1: rate=0.268, drop=1.3%
+  [DEBUG] D2: rate=0.272, drop=0.0%
+  [DEBUG] Degraded caller IDs: []
+  [DEBUG] Checking decay for nw_renewal, allocations: {'welcome_message': {'W1': 1.0}, 'voice': {'V2': 0.8, 'V3': 0.2}, 'caller_id': {'D1': 0.5, 'D2': 0.5}}
+  [DEBUG] voice=V2 weight=0.8
+  [DEBUG] Checking decay for dominant variant voice=V2
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(30, 250), recent_stats=(27, 200)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V3 weight=0.2
+  [DEBUG] welcome_message=W1 weight=1.0
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(30, 250), recent_stats=(27, 200)
+    [DEBUG] No decay detected
+  [DEBUG] nw_kyc caller_id_stats: {'D1': (9994, 39399)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1']
+  [DEBUG] Checking decay for nw_kyc, allocations: {'welcome_message': {'W1': 0.8, 'W2': 0.2}, 'voice': {'V1': 0.8, 'V2': 0.2}, 'caller_id': {'D1': 1.0}}
+  [DEBUG] voice=V1 weight=0.8
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(55, 218), recent_stats=(46, 164)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V2 weight=0.2
+  [DEBUG] welcome_message=W1 weight=0.8
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(61, 250), recent_stats=(54, 187)
+    [DEBUG] No decay detected
+  [DEBUG] welcome_message=W2 weight=0.2
+
+=== 2027-01-10T12:00:00+05:30 (tick 156) ===
+
+=== 2027-01-10T13:00:00+05:30 (tick 157) ===
+
+=== 2027-01-10T14:00:00+05:30 (tick 158) ===
+
+=== 2027-01-10T15:00:00+05:30 (tick 159) ===
+
+=== 2027-01-10T16:00:00+05:30 (tick 160) ===
+
+=== 2027-01-10T17:00:00+05:30 (tick 161) ===
+
+=== 2027-01-10T18:00:00+05:30 (tick 162) ===
+
+=== 2027-01-10T19:00:00+05:30 (tick 163) ===
+
+=== 2027-01-10T20:00:00+05:30 (tick 164) ===
+
+=== 2027-01-10T21:00:00+05:30 (tick 165) ===
+
+=== 2027-01-10T22:00:00+05:30 (tick 166) ===
+
+=== 2027-01-10T23:00:00+05:30 (tick 167) ===
+
+=== 2027-01-11T00:00:00+05:30 (tick 168) ===
+  [EXPERIMENT] Running experiments for nw_renewal
+    voice: current={'V2': 0.8, 'V3': 0.2}, candidates=['V1', 'V2', 'V3', 'V4']
+    Proposed exploration: voice+V4 (approval: apr_00022)
+  [EXPERIMENT] Running experiments for nw_kyc
+    voice: current={'V1': 0.8, 'V2': 0.2}, candidates=['V1', 'V2']
+    welcome_message: current={'W1': 0.8, 'W2': 0.2}, candidates=['W1', 'W2']
+    Analyzing voice for winners...
+    Analyzing welcome_message for winners...
+    No clear winners yet
+  [EXPERIMENT] Running experiments for ks_cancel
+    voice: current={'V1': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V2': 0.2}, candidates=['V1', 'V2', 'V3', 'V4']
+    welcome_message: current={'W1': 0.64, 'W2': 0.16, 'W3': 0.19999999999999996}, candidates=['W1', 'W2', 'W3']
+    Analyzing voice for winners...
+    Analyzing welcome_message for winners...
+    No clear winners yet
+
+=== 2027-01-11T01:00:00+05:30 (tick 169) ===
+  [DEBUG] ks_cancel caller_id_stats: {'D1': (12466, 49378), 'D2': (10493, 49231)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1', 'D2']
+  [DEBUG] Median pickup rate: 0.252
+  [DEBUG] D1: rate=0.252, drop=0.0%
+  [DEBUG] D2: rate=0.213, drop=15.6%
+  [DEBUG] Degraded caller IDs: []
+  [DEBUG] Checking decay for ks_cancel, allocations: {'welcome_message': {'W1': 0.64, 'W2': 0.16, 'W3': 0.19999999999999996}, 'voice': {'V1': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V2': 0.2}, 'caller_id': {'D1': 0.5, 'D2': 0.5}}
+  [DEBUG] voice=V1 weight=0.512
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(9, 130), recent_stats=(10, 102)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V3 weight=0.128
+  [DEBUG] voice=V4 weight=0.15999999999999998
+  [DEBUG] voice=V2 weight=0.2
+  [DEBUG] welcome_message=W1 weight=0.64
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(11, 167), recent_stats=(12, 145)
+    [DEBUG] No decay detected
+  [DEBUG] welcome_message=W2 weight=0.16
+  [DEBUG] welcome_message=W3 weight=0.19999999999999996
+
+=== 2027-01-11T02:00:00+05:30 (tick 170) ===
+
+=== 2027-01-11T03:00:00+05:30 (tick 171) ===
+
+=== 2027-01-11T04:00:00+05:30 (tick 172) ===
+
+=== 2027-01-11T05:00:00+05:30 (tick 173) ===
+
+=== 2027-01-11T06:00:00+05:30 (tick 174) ===
+
+=== 2027-01-11T07:00:00+05:30 (tick 175) ===
+
+=== 2027-01-11T08:00:00+05:30 (tick 176) ===
+
+=== 2027-01-11T09:00:00+05:30 (tick 177) ===
+
+=== 2027-01-11T10:00:00+05:30 (tick 178) ===
+
+=== 2027-01-11T11:00:00+05:30 (tick 179) ===
+  Applied approval apr_00022 for nw_renewal
+  [INCIDENT] Hallucination spike: 0.020 (+0.020 vs baseline)
+    Proposed prompt fix: P4 (approval: apr_00023)
+  [DEBUG] nw_renewal caller_id_stats: {'D1': (10024, 37517), 'D2': (10079, 37083)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1', 'D2']
+  [DEBUG] Median pickup rate: 0.272
+  [DEBUG] D1: rate=0.267, drop=1.7%
+  [DEBUG] D2: rate=0.272, drop=0.0%
+  [DEBUG] Degraded caller IDs: []
+  [DEBUG] Checking decay for nw_renewal, allocations: {'welcome_message': {'W1': 1.0}, 'voice': {'V2': 0.64, 'V3': 0.16, 'V4': 0.19999999999999996}, 'caller_id': {'D1': 0.5, 'D2': 0.5}}
+  [DEBUG] voice=V2 weight=0.64
+  [DEBUG] Checking decay for dominant variant voice=V2
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(30, 203), recent_stats=(15, 165)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V3 weight=0.16
+  [DEBUG] voice=V4 weight=0.19999999999999996
+  [DEBUG] welcome_message=W1 weight=1.0
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(37, 250), recent_stats=(18, 200)
+    [DEBUG] No decay detected
+  [DEBUG] nw_kyc caller_id_stats: {'D1': (10470, 41399)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1']
+  [DEBUG] Checking decay for nw_kyc, allocations: {'welcome_message': {'W1': 0.8, 'W2': 0.2}, 'voice': {'V1': 0.8, 'V2': 0.2}, 'caller_id': {'D1': 1.0}}
+  [DEBUG] voice=V1 weight=0.8
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(47, 201), recent_stats=(41, 153)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V2 weight=0.2
+  [DEBUG] welcome_message=W1 weight=0.8
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(54, 233), recent_stats=(46, 167)
+    [DEBUG] No decay detected
+  [DEBUG] welcome_message=W2 weight=0.2
+
+=== 2027-01-11T12:00:00+05:30 (tick 180) ===
+  Approval rejected for nw_renewal: ['approver declined (judgement call)']
+
+=== 2027-01-11T13:00:00+05:30 (tick 181) ===
+
+=== 2027-01-11T14:00:00+05:30 (tick 182) ===
+
+=== 2027-01-11T15:00:00+05:30 (tick 183) ===
+
+=== 2027-01-11T16:00:00+05:30 (tick 184) ===
+
+=== 2027-01-11T17:00:00+05:30 (tick 185) ===
+
+=== 2027-01-11T18:00:00+05:30 (tick 186) ===
+  [EXPERIMENT] Running experiments for nw_renewal
+    voice: current={'V2': 0.64, 'V3': 0.16, 'V4': 0.19999999999999996}, candidates=['V1', 'V2', 'V3', 'V4']
+    Proposed exploration: voice+V1 (approval: apr_00024)
+  [EXPERIMENT] Running experiments for nw_kyc
+    voice: current={'V1': 0.8, 'V2': 0.2}, candidates=['V1', 'V2']
+    welcome_message: current={'W1': 0.8, 'W2': 0.2}, candidates=['W1', 'W2']
+    Analyzing voice for winners...
+    Analyzing welcome_message for winners...
+    No clear winners yet
+  [EXPERIMENT] Running experiments for ks_cancel
+    voice: current={'V1': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V2': 0.2}, candidates=['V1', 'V2', 'V3', 'V4']
+    welcome_message: current={'W1': 0.64, 'W2': 0.16, 'W3': 0.19999999999999996}, candidates=['W1', 'W2', 'W3']
+    Analyzing voice for winners...
+    Analyzing welcome_message for winners...
+    No clear winners yet
+
+=== 2027-01-11T19:00:00+05:30 (tick 187) ===
+
+=== 2027-01-11T20:00:00+05:30 (tick 188) ===
+
+=== 2027-01-11T21:00:00+05:30 (tick 189) ===
+
+=== 2027-01-11T22:00:00+05:30 (tick 190) ===
+
+=== 2027-01-11T23:00:00+05:30 (tick 191) ===
+
+=== 2027-01-12T00:00:00+05:30 (tick 192) ===
+
+=== 2027-01-12T01:00:00+05:30 (tick 193) ===
+  [DEBUG] ks_cancel caller_id_stats: {'D1': (13051, 51737), 'D2': (10697, 51672)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1', 'D2']
+  [DEBUG] Median pickup rate: 0.252
+  [DEBUG] D1: rate=0.252, drop=0.0%
+  [DEBUG] D2: rate=0.207, drop=17.9%
+  [DEBUG] Degraded caller IDs: []
+  [DEBUG] Checking decay for ks_cancel, allocations: {'welcome_message': {'W1': 0.64, 'W2': 0.16, 'W3': 0.19999999999999996}, 'voice': {'V1': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V2': 0.2}, 'caller_id': {'D1': 0.5, 'D2': 0.5}}
+  [DEBUG] voice=V1 weight=0.512
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(12, 132), recent_stats=(11, 111)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V3 weight=0.128
+  [DEBUG] voice=V4 weight=0.15999999999999998
+  [DEBUG] voice=V2 weight=0.2
+  [DEBUG] welcome_message=W1 weight=0.64
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(11, 166), recent_stats=(10, 115)
+    [DEBUG] No decay detected
+  [DEBUG] welcome_message=W2 weight=0.16
+  [DEBUG] welcome_message=W3 weight=0.19999999999999996
+
+=== 2027-01-12T02:00:00+05:30 (tick 194) ===
+
+=== 2027-01-12T03:00:00+05:30 (tick 195) ===
+
+=== 2027-01-12T04:00:00+05:30 (tick 196) ===
+
+=== 2027-01-12T05:00:00+05:30 (tick 197) ===
+
+=== 2027-01-12T06:00:00+05:30 (tick 198) ===
+
+=== 2027-01-12T07:00:00+05:30 (tick 199) ===
+
+=== 2027-01-12T08:00:00+05:30 (tick 200) ===
+
+=== 2027-01-12T09:00:00+05:30 (tick 201) ===
+
+=== 2027-01-12T10:00:00+05:30 (tick 202) ===
+
+=== 2027-01-12T11:00:00+05:30 (tick 203) ===
+  Applied approval apr_00024 for nw_renewal
+  [INCIDENT] Hallucination spike: 0.020 (+0.020 vs baseline)
+    Proposed prompt fix: P1 (approval: apr_00025)
+  [DEBUG] nw_renewal caller_id_stats: {'D1': (10499, 39299), 'D2': (10568, 38901)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1', 'D2']
+  [DEBUG] Median pickup rate: 0.272
+  [DEBUG] D1: rate=0.267, drop=1.7%
+  [DEBUG] D2: rate=0.272, drop=0.0%
+  [DEBUG] Degraded caller IDs: []
+  [DEBUG] Checking decay for nw_renewal, allocations: {'welcome_message': {'W1': 1.0}, 'voice': {'V2': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V1': 0.2}, 'caller_id': {'D1': 0.5, 'D2': 0.5}}
+  [DEBUG] voice=V2 weight=0.512
+  [DEBUG] Checking decay for dominant variant voice=V2
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(15, 152), recent_stats=(14, 120)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V3 weight=0.128
+  [DEBUG] voice=V4 weight=0.15999999999999998
+  [DEBUG] voice=V1 weight=0.2
+  [DEBUG] welcome_message=W1 weight=1.0
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(29, 250), recent_stats=(23, 200)
+    [DEBUG] No decay detected
+  [DEBUG] nw_kyc caller_id_stats: {'D1': (10928, 43399)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1']
+  [DEBUG] Checking decay for nw_kyc, allocations: {'welcome_message': {'W1': 0.8, 'W2': 0.2}, 'voice': {'V1': 0.8, 'V2': 0.2}, 'caller_id': {'D1': 1.0}}
+  [DEBUG] voice=V1 weight=0.8
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(40, 190), recent_stats=(41, 162)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V2 weight=0.2
+  [DEBUG] welcome_message=W1 weight=0.8
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(47, 212), recent_stats=(37, 155)
+    [DEBUG] No decay detected
+  [DEBUG] welcome_message=W2 weight=0.2
+
+=== 2027-01-12T12:00:00+05:30 (tick 204) ===
+  [EXPERIMENT] Running experiments for nw_renewal
+    Skipping: pending approval
+  [EXPERIMENT] Running experiments for nw_kyc
+    voice: current={'V1': 0.8, 'V2': 0.2}, candidates=['V1', 'V2']
+    welcome_message: current={'W1': 0.8, 'W2': 0.2}, candidates=['W1', 'W2']
+    Analyzing voice for winners...
+    Analyzing welcome_message for winners...
+    No clear winners yet
+  [EXPERIMENT] Running experiments for ks_cancel
+    voice: current={'V1': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V2': 0.2}, candidates=['V1', 'V2', 'V3', 'V4']
+    welcome_message: current={'W1': 0.64, 'W2': 0.16, 'W3': 0.19999999999999996}, candidates=['W1', 'W2', 'W3']
+    Analyzing voice for winners...
+    Analyzing welcome_message for winners...
+    No clear winners yet
+
+=== 2027-01-12T13:00:00+05:30 (tick 205) ===
+  Applied approval apr_00025 for nw_renewal
+
+=== 2027-01-12T14:00:00+05:30 (tick 206) ===
+
+=== 2027-01-12T15:00:00+05:30 (tick 207) ===
+
+=== 2027-01-12T16:00:00+05:30 (tick 208) ===
+
+=== 2027-01-12T17:00:00+05:30 (tick 209) ===
+
+=== 2027-01-12T18:00:00+05:30 (tick 210) ===
+
+=== 2027-01-12T19:00:00+05:30 (tick 211) ===
+
+=== 2027-01-12T20:00:00+05:30 (tick 212) ===
+
+=== 2027-01-12T21:00:00+05:30 (tick 213) ===
+
+=== 2027-01-12T22:00:00+05:30 (tick 214) ===
+
+=== 2027-01-12T23:00:00+05:30 (tick 215) ===
+
+=== 2027-01-13T00:00:00+05:30 (tick 216) ===
+
+=== 2027-01-13T01:00:00+05:30 (tick 217) ===
+  [INCIDENT] Hallucination spike: 0.020 (+0.020 vs baseline)
+    Proposed prompt fix: P3 (approval: apr_00026)
+  [DEBUG] ks_cancel caller_id_stats: {'D1': (13659, 54093), 'D2': (10905, 54116)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1', 'D2']
+  [DEBUG] Median pickup rate: 0.253
+  [DEBUG] D1: rate=0.253, drop=0.0%
+  [DEBUG] D2: rate=0.202, drop=20.2%
+  [DEBUG] Degraded caller IDs: ['D2']
+  [INCIDENT] Degraded caller IDs: ['D2']
+  [DEBUG] Checking decay for ks_cancel, allocations: {'welcome_message': {'W1': 0.64, 'W2': 0.16, 'W3': 0.19999999999999996}, 'voice': {'V1': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V2': 0.2}, 'caller_id': {'D1': 0.5, 'D2': 0.5}}
+  [DEBUG] voice=V1 weight=0.512
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(8, 129), recent_stats=(9, 105)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V3 weight=0.128
+  [DEBUG] voice=V4 weight=0.15999999999999998
+  [DEBUG] voice=V2 weight=0.2
+  [DEBUG] welcome_message=W1 weight=0.64
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(9, 156), recent_stats=(12, 136)
+    [DEBUG] No decay detected
+  [DEBUG] welcome_message=W2 weight=0.16
+  [DEBUG] welcome_message=W3 weight=0.19999999999999996
+
+=== 2027-01-13T02:00:00+05:30 (tick 218) ===
+
+=== 2027-01-13T03:00:00+05:30 (tick 219) ===
+
+=== 2027-01-13T04:00:00+05:30 (tick 220) ===
+
+=== 2027-01-13T05:00:00+05:30 (tick 221) ===
+
+=== 2027-01-13T06:00:00+05:30 (tick 222) ===
+  [EXPERIMENT] Running experiments for nw_renewal
+    voice: current={'V2': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V1': 0.2}, candidates=['V1', 'V2', 'V3', 'V4']
+    welcome_message: current={'W1': 1.0}, candidates=['W1', 'W2', 'W3']
+    Proposed exploration: welcome_message+W2 (approval: apr_00027)
+  [EXPERIMENT] Running experiments for nw_kyc
+    voice: current={'V1': 0.8, 'V2': 0.2}, candidates=['V1', 'V2']
+    welcome_message: current={'W1': 0.8, 'W2': 0.2}, candidates=['W1', 'W2']
+    Analyzing voice for winners...
+    Analyzing welcome_message for winners...
+    No clear winners yet
+  [EXPERIMENT] Running experiments for ks_cancel
+    Skipping: pending approval
+
+=== 2027-01-13T07:00:00+05:30 (tick 223) ===
+
+=== 2027-01-13T08:00:00+05:30 (tick 224) ===
+
+=== 2027-01-13T09:00:00+05:30 (tick 225) ===
+
+=== 2027-01-13T10:00:00+05:30 (tick 226) ===
+
+=== 2027-01-13T11:00:00+05:30 (tick 227) ===
+  Applied approval apr_00027 for nw_renewal
+  Applied approval apr_00026 for ks_cancel
+  [INCIDENT] Hallucination spike: 0.020 (+0.020 vs baseline)
+    Proposed prompt fix: P5 (approval: apr_00028)
+  [DEBUG] nw_renewal caller_id_stats: {'D1': (10963, 41102), 'D2': (11049, 40698)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1', 'D2']
+  [DEBUG] Median pickup rate: 0.271
+  [DEBUG] D1: rate=0.267, drop=1.8%
+  [DEBUG] D2: rate=0.271, drop=0.0%
+  [DEBUG] Degraded caller IDs: []
+  [DEBUG] Checking decay for nw_renewal, allocations: {'welcome_message': {'W1': 0.8, 'W2': 0.2}, 'voice': {'V2': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V1': 0.2}, 'caller_id': {'D1': 0.5, 'D2': 0.5}}
+  [DEBUG] voice=V2 weight=0.512
+  [DEBUG] Checking decay for dominant variant voice=V2
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(24, 126), recent_stats=(21, 115)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V3 weight=0.128
+  [DEBUG] voice=V4 weight=0.15999999999999998
+  [DEBUG] voice=V1 weight=0.2
+  [DEBUG] welcome_message=W1 weight=0.8
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(42, 250), recent_stats=(34, 200)
+    [DEBUG] No decay detected
+  [DEBUG] welcome_message=W2 weight=0.2
+  [DEBUG] nw_kyc caller_id_stats: {'D1': (11434, 45399)}
+  [DEBUG] Viable caller IDs (n>=50): ['D1']
+  [DEBUG] Checking decay for nw_kyc, allocations: {'welcome_message': {'W1': 0.8, 'W2': 0.2}, 'voice': {'V1': 0.8, 'V2': 0.2}, 'caller_id': {'D1': 1.0}}
+  [DEBUG] voice=V1 weight=0.8
+  [DEBUG] Checking decay for dominant variant voice=V1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(50, 188), recent_stats=(50, 168)
+    [DEBUG] No decay detected
+  [DEBUG] voice=V2 weight=0.2
+  [DEBUG] welcome_message=W1 weight=0.8
+  [DEBUG] Checking decay for dominant variant welcome_message=W1
+    [DEBUG] _check_decay: 500 calls in window
+    [DEBUG] hist_stats=(54, 206), recent_stats=(47, 158)
+    [DEBUG] No decay detected
+  [DEBUG] welcome_message=W2 weight=0.2
+
+=== 2027-01-13T12:00:00+05:30 (tick 228) ===
+
+=== 2027-01-13T13:00:00+05:30 (tick 229) ===
+
+=== 2027-01-13T14:00:00+05:30 (tick 230) ===
+
+=== 2027-01-13T15:00:00+05:30 (tick 231) ===
+  Approval rejected for nw_renewal: ['approver declined (judgement call)']
+
+=== 2027-01-13T16:00:00+05:30 (tick 232) ===
+
+=== 2027-01-13T17:00:00+05:30 (tick 233) ===
+
+=== 2027-01-13T18:00:00+05:30 (tick 234) ===
+
+=== 2027-01-13T19:00:00+05:30 (tick 235) ===
+
+=== 2027-01-13T20:00:00+05:30 (tick 236) ===
+
+=== 2027-01-13T21:00:00+05:30 (tick 237) ===
+
+=== 2027-01-13T22:00:00+05:30 (tick 238) ===
+
+=== 2027-01-13T23:00:00+05:30 (tick 239) ===
+
+=== 2027-01-14T00:00:00+05:30 (tick 240) ===
+  [EXPERIMENT] Running experiments for nw_renewal
+    voice: current={'V2': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V1': 0.2}, candidates=['V1', 'V2', 'V3', 'V4']
+    welcome_message: current={'W1': 0.8, 'W2': 0.2}, candidates=['W1', 'W2', 'W3']
+    Proposed exploration: welcome_message+W3 (approval: apr_00029)
+  [EXPERIMENT] Running experiments for nw_kyc
+    voice: current={'V1': 0.8, 'V2': 0.2}, candidates=['V1', 'V2']
+    welcome_message: current={'W1': 0.8, 'W2': 0.2}, candidates=['W1', 'W2']
+    Analyzing voice for winners...
+    Analyzing welcome_message for winners...
+    No clear winners yet
+  [EXPERIMENT] Running experiments for ks_cancel
+    voice: current={'V1': 0.512, 'V3': 0.128, 'V4': 0.15999999999999998, 'V2': 0.2}, candidates=['V1', 'V2', 'V3', 'V4']
+    welcome_message: current={'W1': 0.64, 'W2': 0.16, 'W3': 0.19999999999999996}, candidates=['W1', 'W2', 'W3']
+    Analyzing voice for winners...
+    Analyzing welcome_message for winners...
+    No clear winners yet
+
+=== Simulation finished ===
+Final state: {
+  "scenario": "public_02_incidents",
+  "sim_minute": 14400,
+  "ts": "2027-01-14T00:00:00+05:30",
+  "end_minute": 14400,
+  "finished": true,
+  "tick_minutes": 15,
+  "credits_remaining": 96.0,
+  "chunks": 134,
+  "last_event_id": 324334
+}
