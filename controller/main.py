@@ -274,34 +274,33 @@ class AgentController:
         analyzer = self.analyzers[wf_id]
         recent = list(self.recent_calls[wf_id])
         
-        # Only check hallucinations if we have strong signal (avoid false positives)
-        # Skip if sample size too small
-        connected_with_qa = [c for c in recent if c.get("connected") and "qa" in c]
-        if len(connected_with_qa) < 200:
-            # Not enough data for reliable hallucination detection
-            pass
-        else:
-            halluc_incident = self.detector.check_hallucinations(wf_id, recent)
-            if halluc_incident:
-                print(f"  [INCIDENT] Hallucination spike detected in {wf_id}")
-                self._respond_to_hallucination(wf_id, halluc_incident)
+        # Check hallucinations with lower threshold
+        halluc_incident = self.detector.check_hallucinations(wf_id, recent)
+        if halluc_incident:
+            print(f"  [INCIDENT] Hallucination spike: {halluc_incident['recent_rate']:.3f} "
+                  f"(+{halluc_incident['increase']:.3f} vs baseline)")
+            self._respond_to_hallucination(wf_id, halluc_incident)
         
         # Check caller ID health
         caller_id_stats = {cid: tuple(stats) for cid, stats in 
                           analyzer.caller_id_stats.items()}
         
-        # Calculate global pickup
-        total_dials = sum(s[1] for s in caller_id_stats.values())
-        total_connected = sum(s[0] for s in caller_id_stats.values())
-        global_pickup = total_connected / total_dials if total_dials > 0 else 0.3
-        
-        degraded_dids = self.detector.check_caller_id_health(
-            wf_id, caller_id_stats, global_pickup
-        )
+        degraded_dids = self.detector.check_caller_id_health(wf_id, caller_id_stats)
         
         if degraded_dids:
-            print(f"  [INCIDENT] Degraded caller IDs in {wf_id}: {degraded_dids}")
+            print(f"  [INCIDENT] Degraded caller IDs: {degraded_dids}")
             self._respond_to_bad_caller_id(wf_id, degraded_dids)
+        
+        # Check for decay in current allocations
+        current_config_resp = self.client.get(f"/workflows/{wf_id}/config").json()
+        current_alloc = current_config_resp["config"].get("allocations", {}).get("default", {})
+        
+        for dimension in ["voice", "welcome_message"]:
+            dim_alloc = current_alloc.get(dimension, {})
+            # Check dominant variant (>50% allocation) for decay
+            for variant, weight in dim_alloc.items():
+                if weight > 0.5:
+                    self._check_decay(wf_id, dimension, variant, analyzer)
     
     def _respond_to_hallucination(self, wf_id: str, incident: Dict[str, Any]):
         """Respond to hallucination spike."""
@@ -361,6 +360,101 @@ class AgentController:
                 except Exception as e:
                     print(f"    Failed to propose: {e}")
     
+    def _check_decay(self, wf_id: str, dimension: str, variant: str, analyzer):
+        """Check if a dominant variant is decaying and roll back if needed."""
+        # Get recent and historical stats
+        recent_calls = list(self.recent_calls[wf_id])
+        if len(recent_calls) < 400:
+            return  # Not enough data
+        
+        # Split into historical (first half) and recent (last 200 calls)
+        historical_window = recent_calls[:len(recent_calls)//2]
+        recent_window = recent_calls[-200:]
+        
+        workflow = self.workflows[wf_id]
+        primary_kpi = workflow["objective"]["primary"]
+        
+        # Calculate stats for this variant in each window
+        def get_stats(window, variant_val, dim):
+            successes = 0
+            trials = 0
+            for call in window:
+                if not call.get("variant"):
+                    continue
+                if call["variant"].get(dim) != variant_val:
+                    continue
+                
+                trials += 1
+                if primary_kpi == "engagement_rate":
+                    if call.get("connected") and call.get("engaged"):
+                        successes += 1
+                elif primary_kpi == "pickup_rate":
+                    if call.get("connected"):
+                        successes += 1
+            
+            return (successes, trials)
+        
+        hist_stats = get_stats(historical_window, variant, dimension)
+        recent_stats = get_stats(recent_window, variant, dimension)
+        
+        # Check for decay
+        if self.detector.detect_decay(wf_id, dimension, variant, recent_stats, hist_stats):
+            print(f"  [DECAY] {dimension}={variant} decaying, rolling back")
+            self._rollback_decayed_variant(wf_id, dimension, variant)
+    
+    def _rollback_decayed_variant(self, wf_id: str, dimension: str, variant: str):
+        """Roll back a decayed variant to uniform distribution."""
+        if self.state.get_pending_approval(wf_id):
+            return  # Don't interfere with pending changes
+        
+        workflow = self.workflows[wf_id]
+        current_config_resp = self.client.get(f"/workflows/{wf_id}/config").json()
+        current_config = current_config_resp["config"]
+        base_version = current_config_resp["version"]
+        
+        candidates = workflow["options"][dimension]
+        
+        # Create config with uniform distribution (pause the decayed variant)
+        rollback_config = copy.deepcopy(current_config)
+        if "allocations" not in rollback_config:
+            rollback_config["allocations"] = {}
+        if "default" not in rollback_config["allocations"]:
+            rollback_config["allocations"]["default"] = {}
+        
+        # Distribute equally among all variants
+        rollback_config["allocations"]["default"][dimension] = {
+            c: 1.0 / len(candidates) for c in candidates
+        }
+        
+        # Try auto-apply first
+        if self.governance.can_auto_apply(workflow, current_config, rollback_config):
+            try:
+                self.governance.auto_apply_change(
+                    wf_id, base_version, rollback_config,
+                    rationale=f"Rollback decayed {dimension}={variant} to uniform distribution"
+                )
+                print(f"    Auto-applied rollback")
+                return
+            except Exception as e:
+                print(f"    Auto-apply rollback failed: {e}")
+        
+        # Fall back to approval
+        try:
+            result = self.governance.propose_change(
+                wf_id, workflow, base_version, rollback_config,
+                change_summary=f"Rollback decayed {dimension}: {variant}",
+                rationale=f"Variant {variant} showing performance decay, rolling back to uniform exploration",
+                affected_leads=500,
+                impact_score=0.6,
+                diff={dimension: rollback_config["allocations"]["default"][dimension]},
+                dry_run={"action": "rollback_decay", "variant": variant},
+            )
+            approval_id = result["approval_id"]
+            self.state.set_pending_approval(wf_id, approval_id)
+            print(f"    Proposed rollback (approval: {approval_id})")
+        except Exception as e:
+            print(f"    Rollback proposal failed: {e}")
+    
     def _respond_to_bad_caller_id(self, wf_id: str, degraded_dids: List[str]):
         """Rotate away from degraded caller IDs."""
         # Skip if already pending approval
@@ -372,18 +466,27 @@ class AgentController:
         current_config = current_config_resp["config"]
         base_version = current_config_resp["version"]
         
-        # Build new allocation excluding degraded IDs
-        available_dids = [did for did in workflow["options"]["caller_id"]
-                         if did not in degraded_dids]
+        # Build new allocation - reduce degraded IDs to 0, redistribute to others
+        available_dids = workflow["options"]["caller_id"]
+        current_alloc = current_config.get("allocations", {}).get("default", {}).get("caller_id", {})
         
-        if not available_dids:
+        # Get healthy IDs (not degraded)
+        healthy_dids = [did for did in available_dids if did not in degraded_dids]
+        
+        if not healthy_dids:
             print(f"    No healthy caller IDs available!")
             return
         
         proposed_config = copy.deepcopy(current_config)
         
-        # Update default allocation
-        new_did_dist = {did: 1.0 / len(available_dids) for did in available_dids}
+        # Update default allocation - zero out degraded, distribute to healthy
+        new_did_dist = {}
+        for did in available_dids:
+            if did in degraded_dids:
+                new_did_dist[did] = 0.0
+            else:
+                new_did_dist[did] = 1.0 / len(healthy_dids)
+        
         if "allocations" not in proposed_config:
             proposed_config["allocations"] = {}
         if "default" not in proposed_config["allocations"]:
@@ -517,9 +620,48 @@ class AgentController:
             
             print(f"    Analyzing {dimension} for winners...")
             
+            # Define guardrail check function
+            def check_guardrail(variant_value: str) -> bool:
+                # Get primary and guardrail KPIs
+                primary_kpi = workflow["objective"]["primary"]
+                guardrail = workflow["objective"].get("guardrail", {})
+                
+                if not guardrail:
+                    return True  # No guardrail to enforce
+                
+                # Get stats for winner
+                winner_stats = analyzer.get_variant_stats("default", dimension, variant_value)
+                
+                # For guardrail check, we need to compare against baseline
+                # Get baseline (first variant or current leader)
+                baseline_variant = list(dim_alloc.keys())[0] if dim_alloc else candidates[0]
+                baseline_stats = analyzer.get_variant_stats("default", dimension, baseline_variant)
+                
+                if baseline_stats[1] < 40 or winner_stats[1] < 40:
+                    return True  # Not enough data to check guardrail
+                
+                baseline_rate = baseline_stats[0] / baseline_stats[1]
+                winner_rate = winner_stats[0] / winner_stats[1]
+                
+                # Check guardrail (e.g., pickup_rate_max_drop: 0.02)
+                if primary_kpi == "engagement_rate" and "pickup_rate_max_drop" in guardrail:
+                    # Winner is being selected on engagement, check pickup isn't hurt
+                    # This requires pickup stats which we don't track separately
+                    # For now, skip this check
+                    pass
+                elif primary_kpi == "pickup_rate" and "engagement_rate_max_drop" in guardrail:
+                    max_drop = guardrail["engagement_rate_max_drop"]
+                    drop = baseline_rate - winner_rate
+                    if drop > max_drop:
+                        print(f"      {variant_value} violates guardrail (drop: {drop:.3f} > {max_drop})")
+                        return False
+                
+                return True
+            
             # Use lower threshold since we're actively exploring
             winner = analyzer.get_best_variant("default", dimension, candidates, 
-                                             min_samples=40)
+                                             min_samples=40,
+                                             guardrail_check=check_guardrail)
             
             if winner:
                 current_leader = max(dim_alloc, key=dim_alloc.get) if dim_alloc else None

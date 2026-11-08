@@ -1,6 +1,6 @@
 {
-  "last_chunk": 110,
-  "last_event_id": 297035,
+  "last_chunk": 108,
+  "last_event_id": 297044,
   "current_ts": "2027-01-12T00:00:00+05:30",
   "workflows": {
     "nw_renewal": {

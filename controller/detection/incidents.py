@@ -11,35 +11,43 @@ class IncidentDetector:
         self.client = api_client
         self.state = state_store
         
-        # Detection thresholds
-        self.HALLUC_SPIKE_THRESHOLD = 0.020  # Less sensitive to avoid false positives
-        self.HALLUC_WINDOW_SIZE = 200
-        self.CALLER_ID_DROP_THRESHOLD = 0.15  # More lenient
-        self.CALLER_ID_MIN_SAMPLES = 150
-        self.DRIFT_THRESHOLD = 0.05
-        self.DRIFT_WINDOW = 500
+        # Detection thresholds - tuned for real incident detection
+        self.HALLUC_SPIKE_THRESHOLD = 0.010  # 1% absolute increase triggers
+        self.HALLUC_MIN_SAMPLES = 50  # Lower to catch incidents faster
+        self.CALLER_ID_DROP_THRESHOLD = 0.20  # 20% relative drop
+        self.CALLER_ID_MIN_SAMPLES = 50  # Lower for faster detection
+        self.DECAY_THRESHOLD = 0.08  # 8% drop indicates decay
+        self.DECAY_MIN_SAMPLES = 100
     
     def check_hallucinations(self, workflow_id: str, 
                            recent_calls: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
         """
-        Detect hallucination spikes.
+        Detect hallucination spikes using recent window comparison.
         
         Returns incident data if spike detected, None otherwise.
         """
-        if len(recent_calls) < 100:
+        # Get all connected calls with QA
+        connected_with_qa = [c for c in recent_calls if c.get("connected") and "qa" in c]
+        if len(connected_with_qa) < self.HALLUC_MIN_SAMPLES:
             return None
+        
+        # Take last 100 calls as recent window
+        recent_window = connected_with_qa[-100:] if len(connected_with_qa) >= 100 else connected_with_qa[-self.HALLUC_MIN_SAMPLES:]
         
         # Calculate recent hallucination rate
-        connected_with_qa = [c for c in recent_calls if c.get("connected") and "qa" in c]
-        if len(connected_with_qa) < 50:
-            return None
+        halluc_count = sum(1 for c in recent_window if c["qa"].get("hallucination_flag"))
+        recent_rate = halluc_count / len(recent_window)
         
-        halluc_count = sum(1 for c in connected_with_qa if c["qa"].get("hallucination_flag"))
-        recent_rate = halluc_count / len(connected_with_qa)
-        
-        # Get historical baseline
+        # Get historical baseline (from bootstrap or from earlier calls)
         wf_state = self.state.get_workflow_state(workflow_id)
         hist_rate = wf_state.get("baseline_halluc_rate", 0.01)
+        
+        # Also check against earlier calls in this run if we have enough
+        if len(connected_with_qa) > 200:
+            earlier_window = connected_with_qa[:100]
+            earlier_halluc = sum(1 for c in earlier_window if c["qa"].get("hallucination_flag"))
+            earlier_rate = earlier_halluc / len(earlier_window)
+            hist_rate = max(hist_rate, earlier_rate)  # Use whichever is higher as baseline
         
         increase = recent_rate - hist_rate
         
@@ -49,37 +57,49 @@ class IncidentDetector:
                 "recent_rate": recent_rate,
                 "historical_rate": hist_rate,
                 "increase": increase,
-                "sample_size": len(connected_with_qa),
+                "sample_size": len(recent_window),
             }
         
         return None
     
     def check_caller_id_health(self, workflow_id: str,
-                               caller_id_stats: Dict[str, Tuple[int, int]],
-                               global_pickup: float) -> List[str]:
+                               caller_id_stats: Dict[str, Tuple[int, int]]) -> List[str]:
         """
-        Check for degraded caller IDs.
+        Check for degraded caller IDs by comparing to average of healthy IDs.
         
         Returns list of caller IDs with poor health.
         """
-        degraded = []
+        if not caller_id_stats:
+            return []
         
-        for caller_id, (connected, dials) in caller_id_stats.items():
-            if dials < self.CALLER_ID_MIN_SAMPLES:
-                continue
-            
-            pickup_rate = connected / dials if dials > 0 else 0
-            relative_drop = (global_pickup - pickup_rate) / global_pickup if global_pickup > 0 else 0
-            
-            if relative_drop > self.CALLER_ID_DROP_THRESHOLD:
-                degraded.append(caller_id)
-                self.state.log_audit("caller_id_degraded", workflow_id, {
-                    "caller_id": caller_id,
-                    "pickup_rate": pickup_rate,
-                    "global_pickup": global_pickup,
-                    "relative_drop": relative_drop,
-                    "dials": dials,
-                })
+        # Filter to IDs with enough samples
+        viable = {cid: stats for cid, stats in caller_id_stats.items() 
+                 if stats[1] >= self.CALLER_ID_MIN_SAMPLES}
+        
+        if len(viable) < 2:
+            return []
+        
+        # Calculate rates
+        rates = {cid: stats[0] / stats[1] for cid, stats in viable.items()}
+        
+        # Use median of healthy IDs as baseline (robust to one bad ID)
+        sorted_rates = sorted(rates.values())
+        median_rate = sorted_rates[len(sorted_rates) // 2]
+        
+        # Flag IDs significantly below median
+        degraded = []
+        for cid, rate in rates.items():
+            if median_rate > 0:
+                relative_drop = (median_rate - rate) / median_rate
+                if relative_drop > self.CALLER_ID_DROP_THRESHOLD:
+                    degraded.append(cid)
+                    self.state.log_audit("caller_id_degraded", workflow_id, {
+                        "caller_id": cid,
+                        "pickup_rate": rate,
+                        "median_pickup": median_rate,
+                        "relative_drop": relative_drop,
+                        "dials": viable[cid][1],
+                    })
         
         return degraded
     
@@ -146,21 +166,22 @@ class IncidentDetector:
                 return None, None
             raise
     
-    def detect_decay(self, workflow_id: str, variant_key: str,
+    def detect_decay(self, workflow_id: str, dimension: str, variant: str,
                     recent_stats: Tuple[int, int],
                     historical_stats: Tuple[int, int]) -> bool:
         """
         Detect if a winning variant has decayed.
         
         Args:
-            variant_key: Identifier for the variant
+            dimension: "voice" or "welcome_message"
+            variant: The variant value (e.g., "V3", "W2")
             recent_stats: (successes, trials) for recent period
             historical_stats: (successes, trials) for historical period
         
         Returns:
             True if decay detected
         """
-        if recent_stats[1] < 100 or historical_stats[1] < 100:
+        if recent_stats[1] < self.DECAY_MIN_SAMPLES or historical_stats[1] < self.DECAY_MIN_SAMPLES:
             return False
         
         recent_rate = recent_stats[0] / recent_stats[1] if recent_stats[1] > 0 else 0
@@ -168,12 +189,15 @@ class IncidentDetector:
         
         drop = hist_rate - recent_rate
         
-        if drop > self.DRIFT_THRESHOLD:
+        if drop > self.DECAY_THRESHOLD:
             self.state.log_audit("decay_detected", workflow_id, {
-                "variant": variant_key,
+                "dimension": dimension,
+                "variant": variant,
                 "recent_rate": recent_rate,
                 "historical_rate": hist_rate,
                 "drop": drop,
+                "recent_samples": recent_stats[1],
+                "historical_samples": historical_stats[1],
             })
             return True
         

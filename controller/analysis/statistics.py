@@ -194,7 +194,8 @@ class CohortAnalyzer:
                 self.caller_id_stats[caller_id][0] += 1
     
     def get_best_variant(self, cohort_id: str, dimension: str, 
-                         candidates: List[str], min_samples: int = 100) -> Optional[str]:
+                         candidates: List[str], min_samples: int = 100,
+                         guardrail_check: Optional[callable] = None) -> Optional[str]:
         """Find best variant for a dimension within a cohort."""
         variants = {}
         for value in candidates:
@@ -207,4 +208,16 @@ class CohortAnalyzer:
         if len(variants) < 2:
             return None
         
-        return bayesian_winner(variants, min_samples=min_samples)
+        winner = bayesian_winner(variants, min_samples=min_samples)
+        
+        # Check guardrail if provided
+        if winner and guardrail_check:
+            if not guardrail_check(winner):
+                return None  # Winner violates guardrail
+        
+        return winner
+    
+    def get_variant_stats(self, cohort_id: str, dimension: str, value: str) -> Tuple[int, int]:
+        """Get statistics for a specific variant."""
+        key = (cohort_id, dimension, value)
+        return tuple(self.variant_stats.get(key, [0, 0]))

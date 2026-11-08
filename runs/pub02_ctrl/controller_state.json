@@ -1,6 +1,6 @@
 {
   "last_chunk": 133,
-  "last_event_id": 324313,
+  "last_event_id": 324338,
   "current_ts": "2027-01-14T00:00:00+05:30",
   "workflows": {
     "nw_renewal": {
@@ -34,7 +34,9 @@
       "baseline_halluc_rate": 0.0
     }
   },
-  "pending_approvals": {},
+  "pending_approvals": {
+    "nw_renewal": "apr_00034"
+  },
   "experiments": {},
   "config_versions": {}
 }
