@@ -1,0 +1,2 @@
+{"kind": "sim_started", "sim_minute": 0, "ts": "2027-01-04T00:00:00+05:30", "scenario": "public_01_dev", "days": 8}
+{"kind": "sim_finished", "sim_minute": 11520, "ts": "2027-01-12T00:00:00+05:30"}
