@@ -22,7 +22,11 @@ class IncidentDetector:
     def check_hallucinations(self, workflow_id: str, 
                            recent_calls: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
         """
-        Detect hallucination spikes using recent window comparison.
+        Detect hallucination spikes using CUSUM with adaptive baseline.
+        
+        CUSUM accumulates deviations from baseline and triggers when cumulative 
+        sum exceeds a threshold. This provides fast detection while being robust
+        to noise.
         
         Returns incident data if spike detected, None otherwise.
         """
@@ -31,33 +35,52 @@ class IncidentDetector:
         if len(connected_with_qa) < self.HALLUC_MIN_SAMPLES:
             return None
         
-        # Take last 100 calls as recent window
-        recent_window = connected_with_qa[-100:] if len(connected_with_qa) >= 100 else connected_with_qa[-self.HALLUC_MIN_SAMPLES:]
+        # Build baseline from first 150 calls (or all if fewer)
+        baseline_window_size = min(150, len(connected_with_qa) // 2)
+        if baseline_window_size < 50:
+            baseline_window_size = min(50, len(connected_with_qa))
         
-        # Calculate recent hallucination rate
-        halluc_count = sum(1 for c in recent_window if c["qa"].get("hallucination_flag"))
-        recent_rate = halluc_count / len(recent_window)
+        baseline_window = connected_with_qa[:baseline_window_size]
+        baseline_halluc = sum(1 for c in baseline_window if c["qa"].get("hallucination_flag"))
+        baseline_rate = baseline_halluc / len(baseline_window)
         
-        # Get historical baseline (from bootstrap or from earlier calls)
-        wf_state = self.state.get_workflow_state(workflow_id)
-        hist_rate = wf_state.get("baseline_halluc_rate", 0.01)
+        # CUSUM parameters
+        k = 0.005  # Allowance (half the minimum detectable shift)
+        h = 4.0    # Threshold for triggering (in units of standard deviations)
         
-        # Also check against earlier calls in this run if we have enough
-        if len(connected_with_qa) > 200:
-            earlier_window = connected_with_qa[:100]
-            earlier_halluc = sum(1 for c in earlier_window if c["qa"].get("hallucination_flag"))
-            earlier_rate = earlier_halluc / len(earlier_window)
-            hist_rate = max(hist_rate, earlier_rate)  # Use whichever is higher as baseline
+        # Run CUSUM over recent calls (starting after baseline window)
+        cusum = 0.0
+        max_cusum = 0.0
+        trigger_idx = None
         
-        increase = recent_rate - hist_rate
+        for i in range(baseline_window_size, len(connected_with_qa)):
+            call = connected_with_qa[i]
+            halluc = 1 if call["qa"].get("hallucination_flag") else 0
+            deviation = halluc - baseline_rate - k
+            cusum = max(0, cusum + deviation)
+            
+            if cusum > max_cusum:
+                max_cusum = cusum
+            
+            # Trigger if CUSUM exceeds threshold
+            if cusum > h * baseline_rate:
+                trigger_idx = i
+                break
         
-        if increase > self.HALLUC_SPIKE_THRESHOLD:
+        if trigger_idx is not None:
+            # Calculate recent rate for reporting
+            recent_window = connected_with_qa[max(0, trigger_idx - 50):trigger_idx + 1]
+            recent_halluc = sum(1 for c in recent_window if c["qa"].get("hallucination_flag"))
+            recent_rate = recent_halluc / len(recent_window)
+            
             return {
                 "type": "hallucination_spike",
                 "recent_rate": recent_rate,
-                "historical_rate": hist_rate,
-                "increase": increase,
+                "baseline_rate": baseline_rate,
+                "increase": recent_rate - baseline_rate,
                 "sample_size": len(recent_window),
+                "cusum_value": cusum,
+                "trigger_call": trigger_idx,
             }
         
         return None
@@ -69,12 +92,17 @@ class IncidentDetector:
         
         Returns list of caller IDs with poor health.
         """
+        # Debug logging
+        print(f"  [DEBUG] {workflow_id} caller_id_stats: {caller_id_stats}")
+        
         if not caller_id_stats:
             return []
         
         # Filter to IDs with enough samples
         viable = {cid: stats for cid, stats in caller_id_stats.items() 
                  if stats[1] >= self.CALLER_ID_MIN_SAMPLES}
+        
+        print(f"  [DEBUG] Viable caller IDs (n>={self.CALLER_ID_MIN_SAMPLES}): {list(viable.keys())}")
         
         if len(viable) < 2:
             return []
@@ -86,11 +114,14 @@ class IncidentDetector:
         sorted_rates = sorted(rates.values())
         median_rate = sorted_rates[len(sorted_rates) // 2]
         
+        print(f"  [DEBUG] Median pickup rate: {median_rate:.3f}")
+        
         # Flag IDs significantly below median
         degraded = []
         for cid, rate in rates.items():
             if median_rate > 0:
                 relative_drop = (median_rate - rate) / median_rate
+                print(f"  [DEBUG] {cid}: rate={rate:.3f}, drop={relative_drop:.1%}")
                 if relative_drop > self.CALLER_ID_DROP_THRESHOLD:
                     degraded.append(cid)
                     self.state.log_audit("caller_id_degraded", workflow_id, {
@@ -101,6 +132,7 @@ class IncidentDetector:
                         "dials": viable[cid][1],
                     })
         
+        print(f"  [DEBUG] Degraded caller IDs: {degraded}")
         return degraded
     
     def suggest_prompt_fix(self, workflow_id: str, problem: str) -> Optional[List[Dict[str, Any]]]:
@@ -148,16 +180,16 @@ class IncidentDetector:
             result = resp.json()
             
             pass_rate = result.get("pass_rate")
-            run_id = result.get("run_id")
+            validation_run_id = result.get("validation_run_id")  # Correct field name!
             
             self.state.log_audit("prompt_validated", workflow_id, {
                 "prompt_version": prompt_version,
                 "pass_rate": pass_rate,
-                "run_id": run_id,
+                "validation_run_id": validation_run_id,
                 "n_samples": n_samples,
             })
             
-            return pass_rate, run_id
+            return pass_rate, validation_run_id
         except httpx.HTTPStatusError as e:
             if e.response.status_code == 402:
                 self.state.log_audit("validation_no_credits", workflow_id, {

@@ -186,12 +186,12 @@ class CohortAnalyzer:
                 if engaged:
                     self.variant_stats[(cohort_id, dim, value)][0] += 1
         
-        # Update caller ID stats
+        # Update caller ID stats (ALWAYS track for pickup rate regardless of KPI)
         caller_id = variant.get("caller_id")
         if caller_id:
-            self.caller_id_stats[caller_id][1] += 1
+            self.caller_id_stats[caller_id][1] += 1  # total dials
             if connected:
-                self.caller_id_stats[caller_id][0] += 1
+                self.caller_id_stats[caller_id][0] += 1  # connected
     
     def get_best_variant(self, cohort_id: str, dimension: str, 
                          candidates: List[str], min_samples: int = 100,

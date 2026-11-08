@@ -31,7 +31,18 @@ class AgentController:
         # Per-workflow analyzers
         self.analyzers: Dict[str, CohortAnalyzer] = {}
         for wf_id in self.workflows:
-            self.analyzers[wf_id] = CohortAnalyzer()
+            analyzer = CohortAnalyzer()
+            # Restore saved state if available
+            wf_state = self.state.state["workflows"].get(wf_id, {})
+            if "caller_id_stats" in wf_state and wf_state["caller_id_stats"]:
+                analyzer.caller_id_stats.update(
+                    {k: v for k, v in wf_state["caller_id_stats"].items()}
+                )
+            if "variant_stats" in wf_state and wf_state["variant_stats"]:
+                # Reconstruct tuple keys
+                for key_str, stats in wf_state["variant_stats"].items():
+                    analyzer.variant_stats[eval(key_str)] = stats
+            self.analyzers[wf_id] = analyzer
         
         # Recent call windows for incident detection
         self.recent_calls: Dict[str, deque] = {
@@ -111,7 +122,8 @@ class AgentController:
                         self._check_incidents(wf_id)
                         self.last_incident_check[wf_id] = current_ts
             
-            # Save state after each tick
+            # Sync analyzer stats to state, then save
+            self._sync_analyzer_stats()
             self.state.save_state()
             
             # Check if finished
@@ -120,6 +132,21 @@ class AgentController:
                 final_state = self.client.get("/sim/state").json()
                 print(f"Final state: {json.dumps(final_state, indent=2)}")
                 break
+    
+    def _sync_analyzer_stats(self):
+        """Sync analyzer stats back to state for persistence."""
+        for wf_id, analyzer in self.analyzers.items():
+            wf_state = self.state.state["workflows"].get(wf_id)
+            if wf_state:
+                # Convert defaultdicts to regular dicts for JSON serialization
+                wf_state["caller_id_stats"] = {
+                    caller_id: stats 
+                    for caller_id, stats in analyzer.caller_id_stats.items()
+                }
+                wf_state["variant_stats"] = {
+                    str(key): stats 
+                    for key, stats in analyzer.variant_stats.items()
+                }
     
     def _process_chunk(self, chunk_num: int):
         """Process event chunk."""
@@ -295,11 +322,15 @@ class AgentController:
         current_config_resp = self.client.get(f"/workflows/{wf_id}/config").json()
         current_alloc = current_config_resp["config"].get("allocations", {}).get("default", {})
         
+        print(f"  [DEBUG] Checking decay for {wf_id}, allocations: {current_alloc}")
+        
         for dimension in ["voice", "welcome_message"]:
             dim_alloc = current_alloc.get(dimension, {})
             # Check dominant variant (>50% allocation) for decay
             for variant, weight in dim_alloc.items():
+                print(f"  [DEBUG] {dimension}={variant} weight={weight}")
                 if weight > 0.5:
+                    print(f"  [DEBUG] Checking decay for dominant variant {dimension}={variant}")
                     self._check_decay(wf_id, dimension, variant, analyzer)
     
     def _respond_to_hallucination(self, wf_id: str, incident: Dict[str, Any]):
@@ -364,7 +395,9 @@ class AgentController:
         """Check if a dominant variant is decaying and roll back if needed."""
         # Get recent and historical stats
         recent_calls = list(self.recent_calls[wf_id])
+        print(f"    [DEBUG] _check_decay: {len(recent_calls)} calls in window")
         if len(recent_calls) < 400:
+            print(f"    [DEBUG] Not enough calls for decay check (need 400)")
             return  # Not enough data
         
         # Split into historical (first half) and recent (last 200 calls)
@@ -397,10 +430,14 @@ class AgentController:
         hist_stats = get_stats(historical_window, variant, dimension)
         recent_stats = get_stats(recent_window, variant, dimension)
         
+        print(f"    [DEBUG] hist_stats={hist_stats}, recent_stats={recent_stats}")
+        
         # Check for decay
         if self.detector.detect_decay(wf_id, dimension, variant, recent_stats, hist_stats):
             print(f"  [DECAY] {dimension}={variant} decaying, rolling back")
             self._rollback_decayed_variant(wf_id, dimension, variant)
+        else:
+            print(f"    [DEBUG] No decay detected")
     
     def _rollback_decayed_variant(self, wf_id: str, dimension: str, variant: str):
         """Roll back a decayed variant to uniform distribution."""
