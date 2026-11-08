@@ -39,8 +39,8 @@ class AgentController:
         }
         
         # Decision intervals  
-        self.EXPERIMENT_CHECK_HOURS = 24  # Check once per day
-        self.INCIDENT_CHECK_HOURS = 24    # Check once per day (same as experiments)
+        self.EXPERIMENT_CHECK_HOURS = 18  # Check more frequently for faster iteration
+        self.INCIDENT_CHECK_HOURS = 24    # Check once per day
         self.last_experiment_check: Dict[str, str] = {}
         self.last_incident_check: Dict[str, str] = {}
         
@@ -246,10 +246,10 @@ class AgentController:
         """Determine if it's time to run experiments."""
         last_check = self.last_experiment_check.get(wf_id)
         if not last_check:
-            # Start experiments after 36 hours to have enough data
+            # Start experiments after 24 hours to have baseline data
             # Start time is 2027-01-04T00:00:00+05:30
             start_ts = "2027-01-04T00:00:00+05:30"
-            return self._hours_since(start_ts, current_ts) >= 36
+            return self._hours_since(start_ts, current_ts) >= 24
         
         return self._hours_since(last_check, current_ts) >= self.EXPERIMENT_CHECK_HOURS
     
@@ -274,11 +274,17 @@ class AgentController:
         analyzer = self.analyzers[wf_id]
         recent = list(self.recent_calls[wf_id])
         
-        # Check hallucinations
-        halluc_incident = self.detector.check_hallucinations(wf_id, recent)
-        if halluc_incident:
-            print(f"  [INCIDENT] Hallucination spike detected in {wf_id}")
-            self._respond_to_hallucination(wf_id, halluc_incident)
+        # Only check hallucinations if we have strong signal (avoid false positives)
+        # Skip if sample size too small
+        connected_with_qa = [c for c in recent if c.get("connected") and "qa" in c]
+        if len(connected_with_qa) < 200:
+            # Not enough data for reliable hallucination detection
+            pass
+        else:
+            halluc_incident = self.detector.check_hallucinations(wf_id, recent)
+            if halluc_incident:
+                print(f"  [INCIDENT] Hallucination spike detected in {wf_id}")
+                self._respond_to_hallucination(wf_id, halluc_incident)
         
         # Check caller ID health
         caller_id_stats = {cid: tuple(stats) for cid, stats in 
@@ -433,34 +439,97 @@ class AgentController:
         current_config = current_config_resp["config"]
         base_version = current_config_resp["version"]
         
-        # Use historical data to find winners (bootstrapped from history)
-        # No need for explicit exploration phase
+        # Strategy: gradual exploration that fits auto-apply limits
+        # For each dimension, incrementally add variants until we explore all or find winner
         
-        # Look for winning variants using historical data (from bootstrap)
+        # Check if we need to add more variants (gradual exploration)
+        current_alloc = current_config.get("allocations", {}).get("default", {})
+        
+        for dimension in ["voice", "welcome_message"]:
+            candidates = workflow["options"][dimension]
+            dim_alloc = current_alloc.get(dimension, {})
+            
+            print(f"    {dimension}: current={dim_alloc}, candidates={candidates}")
+            
+            # If not exploring all variants yet, add one more
+            explored = set(dim_alloc.keys())
+            unexplored = set(candidates) - explored
+            
+            if unexplored and len(dim_alloc) < len(candidates):
+                # Add one more variant with small weight
+                new_variant = list(unexplored)[0]
+                
+                # Gradual shift: take 20% from existing, give to new
+                new_alloc = {}
+                for v, weight in dim_alloc.items():
+                    new_alloc[v] = weight * 0.8
+                new_alloc[new_variant] = 0.2
+                
+                # Build proposal config
+                explore_config = copy.deepcopy(current_config)
+                if "allocations" not in explore_config:
+                    explore_config["allocations"] = {}
+                if "default" not in explore_config["allocations"]:
+                    explore_config["allocations"]["default"] = {}
+                
+                explore_config["allocations"]["default"][dimension] = new_alloc
+                
+                # Try auto-apply if allowed
+                if self.governance.can_auto_apply(workflow, current_config, explore_config):
+                    try:
+                        self.governance.auto_apply_change(
+                            wf_id, base_version, explore_config,
+                            rationale=f"Gradual exploration: add {new_variant} to {dimension}"
+                        )
+                        print(f"    Auto-applied: added {new_variant} to {dimension}")
+                        return
+                    except Exception as e:
+                        print(f"    Auto-apply failed: {e}")
+                else:
+                    # Try approval path for exploration
+                    try:
+                        result = self.governance.propose_change(
+                            wf_id, workflow, base_version, explore_config,
+                            change_summary=f"Explore {dimension}: add {new_variant}",
+                            rationale=f"Expand exploration to test {new_variant} against current variants",
+                            affected_leads=500,
+                            impact_score=0.3,
+                            diff={dimension: new_alloc},
+                            dry_run={"action": "add_variant", "variant": new_variant},
+                        )
+                        approval_id = result["approval_id"]
+                        self.state.set_pending_approval(wf_id, approval_id)
+                        print(f"    Proposed exploration: {dimension}+{new_variant} (approval: {approval_id})")
+                        return
+                    except Exception as e:
+                        print(f"    Proposal failed: {e}")
+        
+        # If all variants explored, look for winners
         best_changes = []
         
         for dimension in ["voice", "welcome_message"]:
             candidates = workflow["options"][dimension]
+            dim_alloc = current_alloc.get(dimension, {})
             
-            print(f"    Analyzing {dimension} with candidates: {candidates}")
+            # Only analyze if we're exploring multiple variants
+            if len(dim_alloc) < 2:
+                continue
             
-            # Check default cohort - use lower minimum since we have history
+            print(f"    Analyzing {dimension} for winners...")
+            
+            # Use lower threshold since we're actively exploring
             winner = analyzer.get_best_variant("default", dimension, candidates, 
-                                             min_samples=50)
+                                             min_samples=40)
             
             if winner:
-                current_alloc = current_config.get("allocations", {}).get("default", {}).get(dimension, {})
-                current_winner = max(current_alloc, key=current_alloc.get) if current_alloc else None
+                current_leader = max(dim_alloc, key=dim_alloc.get) if dim_alloc else None
                 
-                print(f"    Found winner for {dimension}: {winner} (current: {current_winner})")
-                
-                # Check if winner is different from current
-                if winner != current_winner:
-                    # Get statistics for comparison
+                # Only promote if winner is different and has sufficient dominance
+                if winner != current_leader and dim_alloc.get(winner, 0) < 0.8:
                     winner_stats = analyzer.variant_stats.get(("default", dimension, winner), [0, 0])
                     winner_rate = winner_stats[0] / winner_stats[1] if winner_stats[1] > 0 else 0
                     
-                    print(f"    Winner stats: rate={winner_rate:.3f}, samples={winner_stats[1]}")
+                    print(f"    Winner: {winner} (rate={winner_rate:.3f}, n={winner_stats[1]})")
                     
                     best_changes.append({
                         "dimension": dimension,
@@ -471,10 +540,8 @@ class AgentController:
                     })
         
         if not best_changes:
-            print(f"    No winning changes found")
+            print(f"    No clear winners yet")
             return
-        
-        print(f"    Found {len(best_changes)} potential changes")
         
         # Apply best change
         change = best_changes[0]

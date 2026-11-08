@@ -1,0 +1,40 @@
+{
+  "last_chunk": 133,
+  "last_event_id": 324313,
+  "current_ts": "2027-01-14T00:00:00+05:30",
+  "workflows": {
+    "nw_renewal": {
+      "cohort_stats": {},
+      "variant_stats": {},
+      "caller_id_stats": {},
+      "hallucination_count": 0,
+      "hallucination_window": [],
+      "last_change_ts": null,
+      "active_experiment": null,
+      "baseline_halluc_rate": 0.0
+    },
+    "nw_kyc": {
+      "cohort_stats": {},
+      "variant_stats": {},
+      "caller_id_stats": {},
+      "hallucination_count": 0,
+      "hallucination_window": [],
+      "last_change_ts": null,
+      "active_experiment": null,
+      "baseline_halluc_rate": 0.016
+    },
+    "ks_cancel": {
+      "cohort_stats": {},
+      "variant_stats": {},
+      "caller_id_stats": {},
+      "hallucination_count": 0,
+      "hallucination_window": [],
+      "last_change_ts": null,
+      "active_experiment": null,
+      "baseline_halluc_rate": 0.0
+    }
+  },
+  "pending_approvals": {},
+  "experiments": {},
+  "config_versions": {}
+}

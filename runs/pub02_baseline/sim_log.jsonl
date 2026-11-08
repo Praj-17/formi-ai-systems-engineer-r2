@@ -1,0 +1,5 @@
+{"kind": "sim_started", "sim_minute": 0, "ts": "2027-01-04T00:00:00+05:30", "scenario": "public_02_incidents", "days": 10}
+{"kind": "hidden_incident", "sim_minute": 3480, "ts": "2027-01-06T10:00:00+05:30", "workflow_id": "ks_cancel", "incident": "did_flagged", "did": "D2"}
+{"kind": "supervisor_edit", "sim_minute": 5010, "ts": "2027-01-07T11:30:00+05:30", "workflow_id": "ks_cancel", "version": 2, "patch": {"prompt_version": "P2"}, "note": "client supervisor ships a more aggressive script mid-day"}
+{"kind": "supervisor_edit", "sim_minute": 8100, "ts": "2027-01-09T15:00:00+05:30", "workflow_id": "nw_renewal", "version": 2, "patch": {"allocations": {"default": {"voice": {"V2": 1}}}}, "note": "supervisor changes default voice mid-experiment"}
+{"kind": "sim_finished", "sim_minute": 14400, "ts": "2027-01-14T00:00:00+05:30"}

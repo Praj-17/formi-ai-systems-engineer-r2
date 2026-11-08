@@ -1,0 +1,2 @@
+{"workflow_id": "ks_cancel", "version": 2, "actor": "supervisor", "dims": ["prompt_version"], "minute": 5010, "exp_engage_old": 0.50022, "exp_engage_new": 0.45377, "exp_did_health_old": 0.59237, "exp_did_health_new": 0.59237}
+{"workflow_id": "nw_renewal", "version": 2, "actor": "supervisor", "dims": ["voice"], "minute": 8100, "exp_engage_old": 0.54647, "exp_engage_new": 0.56084, "exp_did_health_old": 0.86086, "exp_did_health_new": 0.86086}
