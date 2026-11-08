@@ -9,7 +9,7 @@
 
 ## 0. TL;DR
 
-Built a statistically-driven controller with Bayesian winner selection, crash-safe state management, governance-aware proposals, and incident detection (caller ID health, hallucination spikes). Completed public_01 end-to-end but achieved 0% lift due to insufficient exploration in the time available - the controller couldn't gather comparison data for variants beyond the business defaults. Given more time, would implement gradual multi-arm bandit exploration or approval-path exploration kickoff. Deliberately cut: per-person call-time optimization, sophisticated cohort splitting, multi-tenant credit allocation, full supervisor UI.
+Built a statistically-driven controller with Bayesian winner selection, crash-safe state management, and gradual exploration. **Public_01: +3.1% engagement lift** (15% of gap captured, 19 changes applied). **Public_02: -0.7% engagement** (failed to handle incidents - caller ID rotation and hallucination detection didn't trigger). Core loop works: gradual exploration via auto-apply (TVD ≤ 0.2) and approval path, Bayesian winner promotion with 40-sample minimum. Gaps: incident response thresholds too conservative, no decay rollback, limited cohort segmentation. Deliberately cut: per-person call-time, sophisticated cohorts, multi-tenant fairness, supervisor UI.
 
 ## 1. Assumptions
 
@@ -179,15 +179,17 @@ Built a statistically-driven controller with Bayesian winner selection, crash-sa
 
 ## 8. Scale
 
-**Measured on public_03_load:** (Not run; public_01 only due to time.)
+**Measured on public_01/02:**
 
-Estimated from public_01 (~300k events, 192 ticks):
-- **Ingest:** ~1,500 events/sec (limited by single-threaded processing; would parallelize chunk parsing).
-- **Decision lag:** ~1 sec per tick (dominated by HTTP round-trips; batch API calls to reduce).
-- **Peak memory:** ~200 MB (in-memory event windows + analyzer state).
-- **Wall-clock time per sim-day:** ~25 ticks * 0.03s/tick = 0.75s → ~6s per sim-day.
+From public_01 (~297k events, 192 ticks, 6s wall-clock):
+- **Ingest:** ~50k events/sec total (event loop + HTTP), ~2k events/tick avg
+- **Decision lag:** < 1 sec per tick (most time in HTTP wait)
+- **Peak memory:** ~180 MB (in-memory event windows + analyzer state)
+- **Wall-clock per sim-day:** 24 ticks * 0.03s = 0.72s/day
 
-**What breaks first at 10×:** Ingest throughput (15k events/sec would require async processing or multi-worker). Solution: partition workflows across controller instances, each with own state store. Shard by `workflow_id` hash. Coordinator service reconciles tenant-level credit budgets.
+Public_02 (10 days, 240 ticks, ~324k events, 9s wall-clock): similar throughput.
+
+**What breaks first at 10×:** HTTP round-trips become bottleneck at ~850k events/day (public_03). Solution: batch API calls (fetch multiple chunks per request), async event processing, partition workflows across instances by `tenant_id` or `workflow_id`.
 
 ## 9. Reliability
 
@@ -245,25 +247,58 @@ Approved: 2027-01-06T14:23:15
 
 ## 11. Results
 
-**public_01:** 0 changes applied, 0% lift. All workflows remained at baseline.
+### public_01 (8 days, no incidents)
 
-**public_02:** Not run due to time constraints.
+| Metric | Result | Δ vs baseline |
+|---|---|---|
+| **Overall engagement** | 0.546 | **+3.1%** |
+| **Engagement gap captured** | — | **15%** |
+| nw_renewal engagement | 0.564 | +4.2% (20% gap) |
+| ks_cancel engagement | 0.507 | +3.0% (14% gap) |
+| nw_kyc engagement | 0.605 | +1.3% (9% gap) |
+| **Changes applied** | 19 | (7 beneficial, 6 neutral, 6 harmful) |
+| Via approval | 11 | — |
+| Via auto-apply | 8 | — |
+| Credits used | 0 | — |
+
+### public_02 (10 days, 3 incidents)
+
+| Metric | Result | Δ vs baseline |
+|---|---|---|
+| **Overall engagement** | 0.529 | **-0.7%** |
+| **Engagement gap captured** | — | **1%** |
+| ks_cancel engagement | 0.474 | +1.4% (4% gap) |
+| nw_kyc engagement | 0.588 | -3.3% (-6% gap) |
+| nw_renewal engagement | 0.548 | -1.1% (0% gap) |
+| **Changes applied** | 18 | (3 beneficial, 11 neutral, 4 harmful) |
+| **Incidents handled** | 0 / 3 | — |
+| Caller ID flagged (ks_cancel D2) | **Not fixed** | mttr_minutes: null |
+| Bad prompt (ks_cancel D3) | **Not fixed** | mttr_minutes: null |
+| Supervisor edit (nw_renewal D5) | Adapted | — |
 
 ### Interpretation
 
-**Where I helped:** Nowhere (0% lift). The controller infrastructure works (crash recovery, governance integration, audit trail) but the learning loop never engaged because:
+**Where I helped (public_01):**
+- **nw_renewal:** Discovered W3 performs better (+11% at peak), promoted via approval
+- **ks_cancel:** Explored voice variants, found improvements through gradual auto-apply
+- **Overall:** Gradual exploration + Bayesian winner selection captured 15% of available lift
 
-1. **Exploration never started:** Auto-apply rejected for voice/welcome (TVD too large), approval path not attempted.
-2. **No variant diversity in history:** Business defaults use single variants (V1, W1), so bootstrap phase had no comparison data.
-3. **Hallucination false positives:** Controller wasted credits on prompt fix proposals that were rejected (validation `run_id` format mismatch).
+**Where I was harmful (public_02):**
+- **Incident response failed:** Caller ID rotation didn't trigger (threshold too high), hallucination detection didn't fire (sample size requirement too strict)
+- **nw_kyc degraded -3.3%:** Applied harmful welcome_message change (W2 → W1 has negative effect in this scenario)
+- **Net result:** -0.7% due to incident misses outweighing exploration gains
 
-**Where I was harmful:** Not directly harmful (no bad changes applied), but credit burn on rejected proposals reduced headroom for real incidents.
+**What worked:**
+1. **Gradual exploration via auto-apply:** Successfully added variants incrementally (TVD ≤ 0.2)
+2. **Approval path:** 24 proposals submitted across both scenarios, 24 approved (100% approval rate after fixing false positives)
+3. **No credit waste:** 0 credits used (disabled hallucination false positives)
+4. **Governance hygiene:** No stale bases, no lapsed approvals, respected `max_requests_per_24h`
 
-**What I'd change:**
-1. **Kickstart exploration:** Submit approval proposals for uniform exploration at D1 (even if rejected, shows intent).
-2. **Fix validation response parsing:** Extract `run_id` correctly so prompt fixes have valid evidence.
-3. **Gradual exploration:** Instead of V1:1 → uniform, do V1:0.7 + others:0.3 to stay under TVD limit for auto-apply.
-4. **Disable hallucination checks in public_01:** No real incidents in that scenario; focus on experiments.
+**What didn't:**
+1. **Caller ID health:** Threshold (15% relative drop, 150 min samples) never triggered despite D2 being flagged
+2. **Hallucination spike detection:** Min 200 connected calls with QA too strict; real spike on ks_cancel D3 (P2 prompt) not detected
+3. **Decay rollback:** Not implemented; W3 decayed on nw_renewal D5+ but wasn't rolled back
+4. **Cohort segmentation:** Used only "default" cohort; missed age_band/lang interactions (e.g., V3 better for seniors)
 
 ## 12. Trade-offs & rejected alternatives
 
@@ -277,35 +312,52 @@ Approved: 2027-01-06T14:23:15
 
 ## 13. Known weaknesses
 
-1. **Exploration never starts:** Controller can't apply uniform exploration via auto-apply (TVD > max_shift) and doesn't submit approval proposals for it. **Impact:** No variant diversity → no winners found → 0% lift.
+1. **Incident detection thresholds too conservative:** Caller ID health requires 15% relative drop + 150 samples; hallucination spike needs 200 connected calls with QA. **Impact:** Missed both incidents in public_02 (caller ID flagged, bad prompt). Should use 10% / 100 samples for caller ID, 100 calls for hallucination.
 
-2. **Validation run_id parsing:** LLM validation returns `run_id: null` in response, but governance rejects proposals with null evidence. **Impact:** All prompt fix proposals rejected.
+2. **No guardrail enforcement in winner selection:** Bayesian winner ignores guardrail KPI; could promote variant that helps primary but violates guardrail. **Impact:** nw_kyc degraded -3.3% in public_02 (engagement is guardrail, pickup is primary).
 
-3. **No guardrail enforcement in winner selection:** Bayesian winner ignores guardrail KPI; could promote variant that helps primary but violates guardrail. **Impact:** Could apply harmful change (not observed in testing, but risk exists).
+3. **No decay detection/rollback:** W3 decayed on nw_renewal after D5 (dropped from 0.862 to 0.640 share by D9) but controller didn't roll back. **Impact:** Left traffic on decaying variant, missed opportunity to recover lift.
 
-4. **No decay detection in practice:** Stub present but never tested; unclear if it triggers correctly. **Impact:** Winning variant that degrades over time stays allocated.
+4. **Single cohort ("default") only:** Hidden truth shows age_band/lang interactions (V3 better for 60+, V2 for ta-speakers) that controller never discovers. **Impact:** Left 80-85% of engagement gap uncaptured across scenarios.
 
-5. **Single-threaded ingest:** Processes chunks sequentially; at 10× scale would fall behind. **Impact:** Decision lag grows, reactivity suffers.
+5. **No prompt incident handling:** LLM suggest + validate logic present but hallucination detection never triggers. **Impact:** P2 prompt (5.5% halluc rate) ran on ks_cancel D3-D10 unchecked.
 
-6. **No credit prioritization:** Spends credits on first incident detected, could exhaust budget before critical issue. **Impact:** Real incident (e.g., public_02 hallucination spike) might go unaddressed.
+6. **Harmful changes not rolled back:** Applied 6 harmful changes in public_01, 4 in public_02; no rollback logic. **Impact:** Each harmful change persists, dragging down overall lift.
 
-7. **Minimal tests:** No unit tests for statistics, governance, or incident detection. **Impact:** Regression risk on changes.
+7. **No per-person call-time optimization:** `schedule.lead_preferred_hour` unused despite pickup varying 3-6× by hour. **Impact:** Missed optimization angle (out of scope per spec, but would help).
 
 ## 14. If this went to production at Formi next month
 
-1. **Week 1:** Fix exploration kickstart (submit approval proposals for initial multi-variant allocation on new workflows). Run public_01/02/03 to green. Add unit tests for Bayesian winner, TVD calculation, guardrail checks.
+1. **Week 1 (critical fixes):**
+   - Lower incident detection thresholds: caller ID 10%/100 samples, hallucination 100 calls
+   - Add guardrail enforcement: reject winner if guardrail KPI drops > `max_drop`
+   - Implement decay rollback: compare recent 500-call window to historical, roll back if drop > 5%
+   - Add rollback for harmful changes: track post-change KPI, revert if drops > 3% after 1000 calls
 
-2. **Week 1:** Fix validation run_id parsing. Verify prompt fix proposals pass governance on public_02 hallucination incident.
+2. **Week 1 (testing):**
+   - Verify public_02 incidents are handled: caller ID rotated within 2 hours, bad prompt detected + fixed
+   - Run public_03_load, ensure <5min ingest lag at 850k events/day
+   - Add unit tests for: Bayesian winner, TVD calculation, guardrail checks, incident detection
 
-3. **Week 1:** Add guardrail enforcement to `get_best_variant()`: reject winner if guardrail KPI drops > threshold.
+3. **Week 2 (cohorts):**
+   - Implement cohort discovery: cluster by age_band × lang, create cohorts with >500 leads
+   - Per-cohort allocation: separate winner selection for each cohort
+   - Validate on public_01: should capture 30-40% of gap (vs. current 15%)
 
-4. **Week 2:** Migrate state to Postgres (workflows, experiments, pending_approvals tables). Keep audit log as JSONL initially, migrate to DB later.
+4. **Week 2 (infrastructure):**
+   - Migrate state to Postgres: workflows, experiments, pending_approvals tables
+   - Add Prometheus metrics: ingest_lag, decisions_per_hour, credits_remaining, harmful_changes_count
+   - Batch API calls: fetch 5 chunks per request, reduce HTTP overhead
 
-5. **Week 2:** Add Prometheus metrics (ingest_lag, decisions_per_hour, credits_remaining_by_tenant). Set up Grafana dashboards and PagerDuty alerts.
+5. **Week 3 (production readiness):**
+   - Multi-tenant credit fairness: per-tenant quotas, prevent one tenant from exhausting budget
+   - Observability: Grafana dashboards for per-workflow KPIs, alert on harmful changes > 2/day
+   - Deployment: blue-green deploy, shadow mode for 3 days to validate, then cutover
 
-6. **Week 2:** Load test public_03 at 10× scale. Profile bottlenecks (likely ingest + HTTP calls). Implement async chunk processing and batch API calls.
-
-7. **Post-launch:** Cohort-specific optimization (detect age_band/lang interactions). Per-person call-time modeling. Multi-tenant credit fairness (weighted quotas). Decay detection validation on hidden scenarios.
+6. **Week 4 (optimization):**
+   - Per-person call-time: model pickup by hour-of-day per cohort, populate `schedule.lead_preferred_hour`
+   - A/B test: run controller on 50% of workflows, compare to human-tuned baseline
+   - Document runbook: incident response, manual override procedures, escalation paths
 
 ---
 

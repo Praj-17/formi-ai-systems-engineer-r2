@@ -51,11 +51,15 @@ controller/
 - Complete audit trail (JSONL)
 - Idempotent event ingestion
 
+✅ **Results:**
+- **public_01:** +3.1% engagement (15% gap captured), 19 changes applied
+- **public_02:** -0.7% engagement (incident handling failed)
+
 ⚠️ **Known Issues:**
-- Exploration phase blocked by TVD limits (needs approval-path kickoff)
-- Validation run_id parsing (causes all prompt proposals to be rejected)
-- No guardrail enforcement in winner selection
-- Achieved 0% lift on public_01 (no variant diversity in history)
+- Incident detection thresholds too conservative (missed caller ID + hallucination)
+- No guardrail enforcement (nw_kyc degraded -3.3%)
+- No decay rollback implemented
+- Single cohort only (missed age/lang interactions)
 
 See `SUBMISSION.md` for complete analysis, stakeholder responses, and production roadmap.
 
@@ -93,9 +97,10 @@ changes = state.query_audit(workflow_id="nw_renewal",
 ## Deliverables
 
 - ✅ Controller with `run.sh`
-- ✅ `SUBMISSION.md` with full analysis
-- ✅ `reports/public_01.md` grade output
+- ✅ `SUBMISSION.md` with full analysis and real results
+- ✅ `reports/public_01.md` - **+3.1% engagement**
+- ✅ `reports/public_02.md` - **-0.7% engagement**
 - ✅ `test_crash_recovery.sh` demonstration
 - ✅ Complete audit trail in `runs/*/audit_log.jsonl`
 
-**Note:** Achieved 0% lift due to exploration issues (see SUBMISSION.md Section 11 & 13 for detailed analysis and fixes needed).
+**Summary:** Gradual exploration + Bayesian winner selection produced solid lift on public_01 (15% of gap). Failed on public_02 due to conservative incident detection thresholds. See SUBMISSION.md Section 11-14 for detailed results, gaps, and production roadmap.
