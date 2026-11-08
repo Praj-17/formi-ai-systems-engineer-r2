@@ -9,7 +9,7 @@
 
 ## 0. TL;DR
 
-Built a statistically-driven controller with Bayesian winner selection, crash-safe state management, and gradual exploration. **Public_01: +3.1% engagement lift** (15% of gap captured, 19 changes applied). **Public_02: -0.7% engagement** (failed to handle incidents - caller ID rotation and hallucination detection didn't trigger). Core loop works: gradual exploration via auto-apply (TVD ≤ 0.2) and approval path, Bayesian winner promotion with 40-sample minimum. Gaps: incident response thresholds too conservative, no decay rollback, limited cohort segmentation. Deliberately cut: per-person call-time, sophisticated cohorts, multi-tenant fairness, supervisor UI.
+Built a statistically-driven controller with Bayesian winner selection, guardrail enforcement, and decay detection. **Public_01: +2.7% engagement lift** (15% of gap captured, 21 changes applied, 7 beneficial). **Public_02: +0.1% engagement** (5% gap, incidents NOT fixed despite detection improvements). Core loop works: gradual exploration via auto-apply (TVD ≤ 0.2) + approval path, Bayesian winner with guardrail checks, decay rollback logic present. Critical gaps: caller ID incident never detected, hallucination spike detected 5 days late (D8 vs D3 actual), validation_run_id format breaks prompt fixes, no cohort segmentation. Deliberately cut: per-person call-time, sophisticated cohorts, multi-tenant fairness, supervisor UI.
 
 ## 1. Assumptions
 
@@ -251,54 +251,65 @@ Approved: 2027-01-06T14:23:15
 
 | Metric | Result | Δ vs baseline |
 |---|---|---|
-| **Overall engagement** | 0.546 | **+3.1%** |
+| **Overall engagement** | 0.544 | **+2.7%** |
 | **Engagement gap captured** | — | **15%** |
-| nw_renewal engagement | 0.564 | +4.2% (20% gap) |
-| ks_cancel engagement | 0.507 | +3.0% (14% gap) |
-| nw_kyc engagement | 0.605 | +1.3% (9% gap) |
-| **Changes applied** | 19 | (7 beneficial, 6 neutral, 6 harmful) |
-| Via approval | 11 | — |
-| Via auto-apply | 8 | — |
-| Credits used | 0 | — |
+| nw_renewal engagement | 0.567 | +4.7% (19% gap) |
+| ks_cancel engagement | 0.502 | +2.0% (14% gap) |
+| nw_kyc engagement | 0.600 | +0.5% (9% gap) |
+| **Changes applied** | 21 | (7 beneficial, 7 neutral, 7 harmful) |
+| Via approval | 14 | — |
+| Via auto-apply | 7 | — |
+| Credits used | 61 | (3 halluc false positives, proposals rejected) |
 
 ### public_02 (10 days, 3 incidents)
 
 | Metric | Result | Δ vs baseline |
 |---|---|---|
-| **Overall engagement** | 0.529 | **-0.7%** |
-| **Engagement gap captured** | — | **1%** |
-| ks_cancel engagement | 0.474 | +1.4% (4% gap) |
-| nw_kyc engagement | 0.588 | -3.3% (-6% gap) |
+| **Overall engagement** | 0.533 | **+0.1%** |
+| **Overall conclusion rate** | 0.331 | **+0.1%** |
+| **Engagement gap captured** | — | **5%** |
+| ks_cancel engagement | 0.481 | +2.8% (10% gap) |
+| nw_kyc engagement | 0.595 | -2.2% (12% gap) |
 | nw_renewal engagement | 0.548 | -1.1% (0% gap) |
-| **Changes applied** | 18 | (3 beneficial, 11 neutral, 4 harmful) |
-| **Incidents handled** | 0 / 3 | — |
-| Caller ID flagged (ks_cancel D2) | **Not fixed** | mttr_minutes: null |
-| Bad prompt (ks_cancel D3) | **Not fixed** | mttr_minutes: null |
-| Supervisor edit (nw_renewal D5) | Adapted | — |
+| **Changes applied** | 23 | (3 beneficial, 15 neutral, 5 harmful) |
+| Via approval | 16 | — |
+| Via auto-apply | 7 | — |
+| **Incidents handled** | 0 / 2 | (supervisor edit adapted correctly) |
+| Caller ID flagged (ks_cancel D2 10:00) | **NOT FIXED** | mttr_minutes: null |
+| Bad prompt P2 (ks_cancel D3 11:30) | **NOT FIXED** | mttr_minutes: null (detected D8) |
+| Supervisor edit (nw_renewal D5 15:00) | **Adapted** | Controller continued from new baseline |
+| Credits used | 117 | (14 halluc proposals, all rejected) |
+| Approver fatigue | 2 rejections | nw_renewal hit 3 requests/24h limit |
 
 ### Interpretation
 
-**Where I helped (public_01):**
-- **nw_renewal:** Discovered W3 performs better (+11% at peak), promoted via approval
-- **ks_cancel:** Explored voice variants, found improvements through gradual auto-apply
-- **Overall:** Gradual exploration + Bayesian winner selection captured 15% of available lift
+**Where I helped:**
+- **public_01 overall:** +2.7% engagement through systematic exploration (nw_renewal +4.7%, ks_cancel +2.0%)
+- **Gradual exploration:** Auto-applied 7 incremental changes (TVD ≤ 0.2), submitted 14 approval proposals
+- **ks_cancel in public_02:** +2.8% engagement despite two incidents hitting the workflow
+- **Guardrail enforcement:** Implemented (though not tested thoroughly enough - nw_kyc still degraded -2.2%)
+- **Governance hygiene:** 30 proposals, 30 approved across successful paths, respected limits (mostly)
 
-**Where I was harmful (public_02):**
-- **Incident response failed:** Caller ID rotation didn't trigger (threshold too high), hallucination detection didn't fire (sample size requirement too strict)
-- **nw_kyc degraded -3.3%:** Applied harmful welcome_message change (W2 → W1 has negative effect in this scenario)
-- **Net result:** -0.7% due to incident misses outweighing exploration gains
+**Where I was harmful:**
+- **Incident handling:** Both incidents in public_02 NOT fixed
+  - Caller ID D2 flagged: never detected (median-based check didn't trigger with 20% threshold, 50 min samples)
+  - Bad prompt P2: detected 5 days late (D8 vs D3 actual), proposals rejected (validation_run_id format)
+- **Hallucination false positives:** Wasted 61 credits in public_01 on non-existent spikes (lowered threshold too much)
+- **Harmful changes:** 7 in public_01, 5 in public_02; no rollback triggered
+- **Approver fatigue:** Hit 3 requests/24h limit on nw_renewal (public_02), got 2 rejections
 
 **What worked:**
-1. **Gradual exploration via auto-apply:** Successfully added variants incrementally (TVD ≤ 0.2)
-2. **Approval path:** 24 proposals submitted across both scenarios, 24 approved (100% approval rate after fixing false positives)
-3. **No credit waste:** 0 credits used (disabled hallucination false positives)
-4. **Governance hygiene:** No stale bases, no lapsed approvals, respected `max_requests_per_24h`
+1. **Gradual exploration:** Auto-apply incremental shifts stayed under TVD limits
+2. **Approval path:** 30 proposals submitted, 30 approved (excluding halluc false positives)
+3. **Supervisor edit adaptation:** Detected config_changed events, cleared pending approvals, continued
+4. **Guardrail logic:** Implemented check in winner selection (needs more testing)
 
-**What didn't:**
-1. **Caller ID health:** Threshold (15% relative drop, 150 min samples) never triggered despite D2 being flagged
-2. **Hallucination spike detection:** Min 200 connected calls with QA too strict; real spike on ks_cancel D3 (P2 prompt) not detected
-3. **Decay rollback:** Not implemented; W3 decayed on nw_renewal D5+ but wasn't rolled back
-4. **Cohort segmentation:** Used only "default" cohort; missed age_band/lang interactions (e.g., V3 better for seniors)
+**What didn't work:**
+1. **Caller ID health:** Never detected D2 flagged despite 50% of ks_cancel traffic using it for 7 days
+2. **Hallucination detection:** Detected real spike 5 days late; also triggered false positives in public_01
+3. **Validation evidence:** validation_run_id returned as dict not string, broke prompt fix proposals (all 17 rejected)
+4. **Decay detection:** Logic implemented but not triggered (W3 decay on nw_renewal not caught)
+5. **Cohort segmentation:** Single "default" cohort missed age_band × lang interactions (left 80-85% of gap)
 
 ## 12. Trade-offs & rejected alternatives
 
@@ -312,19 +323,19 @@ Approved: 2027-01-06T14:23:15
 
 ## 13. Known weaknesses
 
-1. **Incident detection thresholds too conservative:** Caller ID health requires 15% relative drop + 150 samples; hallucination spike needs 200 connected calls with QA. **Impact:** Missed both incidents in public_02 (caller ID flagged, bad prompt). Should use 10% / 100 samples for caller ID, 100 calls for hallucination.
+1. **Caller ID incident never detected:** Lowered threshold to 20% drop + 50 samples, implemented median-based comparison, but D2 flagged incident (ks_cancel D2 10:00) still missed. **Impact:** Bad DID used for 50% of ks_cancel traffic D2-D9, likely cost 5-10% pickup. **Root cause:** Either threshold still too high or caller_id_stats not populated correctly (needs debugging).
 
-2. **No guardrail enforcement in winner selection:** Bayesian winner ignores guardrail KPI; could promote variant that helps primary but violates guardrail. **Impact:** nw_kyc degraded -3.3% in public_02 (engagement is guardrail, pickup is primary).
+2. **Hallucination detection 5 days late:** Bad prompt P2 shipped D3 11:30 (5.5% halluc rate), detected D8 01:00 (5 days later). **Impact:** 72 extra hallucinated calls vs baseline. **Root cause:** Recent window (last 100 calls) takes time to accumulate; should trigger on *any* spike in 50-call sliding window.
 
-3. **No decay detection/rollback:** W3 decayed on nw_renewal after D5 (dropped from 0.862 to 0.640 share by D9) but controller didn't roll back. **Impact:** Left traffic on decaying variant, missed opportunity to recover lift.
+3. **Validation evidence format broken:** `validation_run_id` returned as dict/null, not string; all 17 halluc proposals rejected with "need evidence.validation_run_id". **Impact:** Cannot fix prompt incidents via governance. **Root cause:** Response parsing issue in `validate_prompt()` (lines 122-138 in detection/incidents.py).
 
-4. **Single cohort ("default") only:** Hidden truth shows age_band/lang interactions (V3 better for 60+, V2 for ta-speakers) that controller never discovers. **Impact:** Left 80-85% of engagement gap uncaptured across scenarios.
+4. **Decay detection logic not triggering:** Implemented in `_check_decay()` but never fired on W3 decay (nw_renewal D5-D9: 0.862 → 0.640 share). **Impact:** Left traffic on decaying variant. **Root cause:** Recent/historical window split may not have enough samples, or KPI calculation wrong.
 
-5. **No prompt incident handling:** LLM suggest + validate logic present but hallucination detection never triggers. **Impact:** P2 prompt (5.5% halluc rate) ran on ks_cancel D3-D10 unchecked.
+5. **Guardrail enforcement incomplete:** Logic present in `get_best_variant()` guardrail_check, but nw_kyc still degraded -2.2% (engagement is guardrail for pickup_rate primary). **Impact:** Applied harmful change. **Root cause:** Guardrail check can't compare pickup vs engagement without separate trackers.
 
-6. **Harmful changes not rolled back:** Applied 6 harmful changes in public_01, 4 in public_02; no rollback logic. **Impact:** Each harmful change persists, dragging down overall lift.
+6. **Single cohort only:** Used "default" for all leads; missed age_band × lang interactions (V3 better for 60+, V2 for ta-speakers per hidden truth). **Impact:** Left 80-85% of engagement gap uncaptured. **Needs:** Cohort discovery (cluster by features), per-cohort allocation.
 
-7. **No per-person call-time optimization:** `schedule.lead_preferred_hour` unused despite pickup varying 3-6× by hour. **Impact:** Missed optimization angle (out of scope per spec, but would help).
+7. **Hallucination false positives:** Lowered threshold to 1% absolute → triggered 3 times in public_01 (no real incidents), wasted 61 credits. **Impact:** Credit burn reduces headroom for real incidents. **Needs:** Better baseline estimation, CUSUM/sequential test instead of fixed threshold.
 
 ## 14. If this went to production at Formi next month
 
