@@ -1,52 +1,52 @@
 {
   "last_chunk": 133,
-  "last_event_id": 324334,
+  "last_event_id": 324339,
   "current_ts": "2027-01-14T00:00:00+05:30",
   "workflows": {
     "nw_renewal": {
       "cohort_stats": {},
       "variant_stats": {
         "('default', 'welcome_message', 'W1')": [
-          12196,
-          22605
+          11937,
+          21701
         ],
         "('default', 'voice', 'V1')": [
-          9743,
-          17804
+          9579,
+          17430
         ],
         "('default', 'caller_id', 'D1')": [
-          6156,
-          11332
+          6299,
+          11455
         ],
         "('default', 'caller_id', 'D2')": [
-          6132,
-          11430
-        ],
-        "('default', 'voice', 'V3')": [
-          692,
-          1321
+          6298,
+          11381
         ],
         "('default', 'voice', 'V4')": [
-          365,
-          709
+          440,
+          915
+        ],
+        "('default', 'voice', 'V3')": [
+          364,
+          650
         ],
         "('default', 'voice', 'V2')": [
-          1488,
-          2928
+          2214,
+          3841
         ],
-        "('default', 'welcome_message', 'W2')": [
-          92,
-          157
+        "('default', 'welcome_message', 'W3')": [
+          660,
+          1135
         ]
       },
       "caller_id_stats": {
         "D1": [
-          11332,
-          42592
+          11455,
+          42605
         ],
         "D2": [
-          11430,
-          42208
+          11381,
+          42195
         ]
       },
       "hallucination_count": 0,
@@ -59,29 +59,29 @@
       "cohort_stats": {},
       "variant_stats": {
         "('default', 'welcome_message', 'W1')": [
-          11556,
-          45922
+          11813,
+          46751
         ],
         "('default', 'voice', 'V1')": [
-          11366,
-          45198
+          11252,
+          44386
         ],
         "('default', 'caller_id', 'D1')": [
-          11862,
+          11921,
           47199
         ],
         "('default', 'voice', 'V2')": [
-          496,
-          2001
+          669,
+          2813
         ],
         "('default', 'welcome_message', 'W2')": [
-          306,
-          1277
+          108,
+          448
         ]
       },
       "caller_id_stats": {
         "D1": [
-          11862,
+          11921,
           47199
         ]
       },
@@ -95,50 +95,50 @@
       "cohort_stats": {},
       "variant_stats": {
         "('default', 'welcome_message', 'W1')": [
-          11751,
-          23467
+          11522,
+          23392
         ],
         "('default', 'voice', 'V1')": [
-          11051,
-          21973
+          10806,
+          21883
         ],
         "('default', 'caller_id', 'D1')": [
-          7112,
-          14241
+          6828,
+          14160
         ],
         "('default', 'caller_id', 'D2')": [
-          5608,
-          11104
-        ],
-        "('default', 'voice', 'V3')": [
-          489,
-          1004
+          5507,
+          11095
         ],
         "('default', 'voice', 'V4')": [
-          567,
-          1135
+          496,
+          1069
+        ],
+        "('default', 'voice', 'V3')": [
+          505,
+          1089
         ],
         "('default', 'voice', 'V2')": [
-          613,
-          1233
-        ],
-        "('default', 'welcome_message', 'W2')": [
-          500,
-          938
+          528,
+          1214
         ],
         "('default', 'welcome_message', 'W3')": [
-          469,
-          940
+          389,
+          911
+        ],
+        "('default', 'welcome_message', 'W2')": [
+          424,
+          952
         ]
       },
       "caller_id_stats": {
         "D1": [
-          14241,
-          56561
+          14160,
+          56586
         ],
         "D2": [
-          11104,
-          56448
+          11095,
+          56423
         ]
       },
       "hallucination_count": 0,
@@ -149,7 +149,7 @@
     }
   },
   "pending_approvals": {
-    "nw_renewal": "apr_00029"
+    "nw_renewal": "apr_00032"
   },
   "experiments": {},
   "config_versions": {}

@@ -14,7 +14,7 @@ class IncidentDetector:
         # Detection thresholds - tuned for real incident detection
         self.HALLUC_SPIKE_THRESHOLD = 0.010  # 1% absolute increase triggers
         self.HALLUC_MIN_SAMPLES = 50  # Lower to catch incidents faster
-        self.CALLER_ID_DROP_THRESHOLD = 0.20  # 20% relative drop
+        self.CALLER_ID_DROP_THRESHOLD = 0.15  # 15% relative drop (catch degradation early)
         self.CALLER_ID_MIN_SAMPLES = 50  # Lower for faster detection
         self.DECAY_THRESHOLD = 0.08  # 8% drop indicates decay
         self.DECAY_MIN_SAMPLES = 100
@@ -45,8 +45,8 @@ class IncidentDetector:
         baseline_rate = baseline_halluc / len(baseline_window)
         
         # CUSUM parameters
-        k = 0.005  # Allowance (half the minimum detectable shift)
-        h = 4.0    # Threshold for triggering (in units of standard deviations)
+        k = 0.003  # Allowance (half the minimum detectable shift)
+        h = 2.5    # Absolute threshold for cumulative deviation
         
         # Run CUSUM over recent calls (starting after baseline window)
         cusum = 0.0
@@ -62,8 +62,9 @@ class IncidentDetector:
             if cusum > max_cusum:
                 max_cusum = cusum
             
-            # Trigger if CUSUM exceeds threshold
-            if cusum > h * baseline_rate:
+            # Trigger if CUSUM exceeds absolute threshold
+            # This catches shifts of ~1% sustained over 50-100 calls
+            if cusum > h:
                 trigger_idx = i
                 break
         
