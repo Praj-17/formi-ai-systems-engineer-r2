@@ -1,56 +1,56 @@
 {
   "last_chunk": 133,
-  "last_event_id": 324320,
+  "last_event_id": 324326,
   "current_ts": "2027-01-14T00:00:00+05:30",
   "workflows": {
     "nw_renewal": {
       "cohort_stats": {},
       "variant_stats": {
         "('default', 'welcome_message', 'W1')": [
-          9731,
-          17862
+          10089,
+          18428
         ],
         "('default', 'voice', 'V1')": [
-          9348,
-          17081
+          9669,
+          17653
         ],
         "('default', 'caller_id', 'D1')": [
-          6149,
-          11349
+          6368,
+          11417
         ],
         "('default', 'caller_id', 'D2')": [
-          6186,
-          11340
-        ],
-        "('default', 'voice', 'V3')": [
-          664,
-          1202
+          6274,
+          11412
         ],
         "('default', 'voice', 'V2')": [
-          1811,
-          3334
+          2006,
+          3310
+        ],
+        "('default', 'voice', 'V3')": [
+          468,
+          887
         ],
         "('default', 'voice', 'V4')": [
-          512,
-          1072
+          499,
+          979
         ],
         "('default', 'welcome_message', 'W3')": [
-          2402,
-          4450
+          2506,
+          4332
         ],
         "('default', 'welcome_message', 'W2')": [
-          202,
-          377
+          47,
+          69
         ]
       },
       "caller_id_stats": {
         "D1": [
-          11349,
-          42679
+          11417,
+          42588
         ],
         "D2": [
-          11340,
-          42121
+          11412,
+          42212
         ]
       },
       "hallucination_count": 0,
@@ -63,29 +63,29 @@
       "cohort_stats": {},
       "variant_stats": {
         "('default', 'welcome_message', 'W1')": [
-          11251,
-          44794
+          11236,
+          44780
         ],
         "('default', 'voice', 'V1')": [
-          11178,
-          44381
+          11158,
+          44353
         ],
         "('default', 'caller_id', 'D1')": [
-          11828,
+          11840,
           47199
         ],
         "('default', 'voice', 'V2')": [
-          650,
-          2818
+          682,
+          2846
         ],
         "('default', 'welcome_message', 'W2')": [
-          577,
-          2405
+          604,
+          2419
         ]
       },
       "caller_id_stats": {
         "D1": [
-          11828,
+          11840,
           47199
         ]
       },
@@ -99,58 +99,58 @@
       "cohort_stats": {},
       "variant_stats": {
         "('default', 'welcome_message', 'W1')": [
-          11805,
-          23831
+          11947,
+          24163
         ],
         "('default', 'voice', 'V1')": [
-          11066,
-          22318
+          11189,
+          22526
         ],
         "('default', 'caller_id', 'D1')": [
           6920,
-          14163
+          14113
         ],
         "('default', 'caller_id', 'D2')": [
-          5374,
-          10684
-        ],
-        "('default', 'voice', 'V3')": [
-          554,
-          1134
+          5366,
+          10540
         ],
         "('default', 'voice', 'V2')": [
-          561,
-          1187
+          543,
+          1137
+        ],
+        "('default', 'voice', 'V3')": [
+          649,
+          1323
         ],
         "('default', 'voice', 'V4')": [
-          675,
-          1425
+          725,
+          1506
         ],
         "('default', 'welcome_message', 'W3')": [
-          488,
-          1063
+          539,
+          1102
         ],
         "('default', 'welcome_message', 'W2')": [
-          563,
-          1170
+          620,
+          1227
         ],
         "('default', 'caller_id', 'D3')": [
-          562,
-          1217
+          820,
+          1839
         ]
       },
       "caller_id_stats": {
         "D1": [
-          14163,
-          56700
+          14113,
+          56586
         ],
         "D2": [
-          10684,
-          51967
+          10540,
+          49621
         ],
         "D3": [
-          1217,
-          4342
+          1839,
+          6802
         ]
       },
       "hallucination_count": 0,
@@ -160,7 +160,9 @@
       "baseline_halluc_rate": 0.0
     }
   },
-  "pending_approvals": {},
+  "pending_approvals": {
+    "nw_renewal": "apr_00022"
+  },
   "experiments": {},
   "config_versions": {}
 }

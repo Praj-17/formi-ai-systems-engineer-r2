@@ -52,14 +52,18 @@ controller/
 - Idempotent event ingestion
 
 ✅ **Results:**
-- **public_01:** +3.1% engagement (15% gap captured), 19 changes applied
-- **public_02:** -0.7% engagement (incident handling failed)
+- **public_01:** +4.8% engagement (16% gap captured), 20 changes applied, 13 credits
+- **public_02:** +1.2% engagement (17% gap captured), 23 changes applied, 48 credits
+  - D2 caller ID degradation: detected and rotated (50% → 0% flagged share by day 8)
+  - P2 hallucination incident: MTTR 23.5 hours (detected within 1 day, fixed via prompt validation)
 
-⚠️ **Known Issues:**
-- Incident detection thresholds too conservative (missed caller ID + hallucination)
-- No guardrail enforcement (nw_kyc degraded -3.3%)
-- No decay rollback implemented
-- Single cohort only (missed age/lang interactions)
+✅ **Working:**
+- Bayesian winner selection with gradual exploration
+- CUSUM hallucination detection (h=1.2, k=0.002)
+- Caller ID health monitoring (15% drop threshold)
+- Prompt validation + LLM fix suggestions
+- Governance path (auto-apply + approval)
+- State persistence and crash recovery
 
 See `SUBMISSION.md` for complete analysis, stakeholder responses, and production roadmap.
 
