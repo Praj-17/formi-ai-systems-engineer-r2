@@ -1,52 +1,56 @@
 {
   "last_chunk": 133,
-  "last_event_id": 324339,
+  "last_event_id": 324320,
   "current_ts": "2027-01-14T00:00:00+05:30",
   "workflows": {
     "nw_renewal": {
       "cohort_stats": {},
       "variant_stats": {
         "('default', 'welcome_message', 'W1')": [
-          11937,
-          21701
+          9731,
+          17862
         ],
         "('default', 'voice', 'V1')": [
-          9579,
-          17430
+          9348,
+          17081
         ],
         "('default', 'caller_id', 'D1')": [
-          6299,
-          11455
+          6149,
+          11349
         ],
         "('default', 'caller_id', 'D2')": [
-          6298,
-          11381
-        ],
-        "('default', 'voice', 'V4')": [
-          440,
-          915
+          6186,
+          11340
         ],
         "('default', 'voice', 'V3')": [
-          364,
-          650
+          664,
+          1202
         ],
         "('default', 'voice', 'V2')": [
-          2214,
-          3841
+          1811,
+          3334
+        ],
+        "('default', 'voice', 'V4')": [
+          512,
+          1072
         ],
         "('default', 'welcome_message', 'W3')": [
-          660,
-          1135
+          2402,
+          4450
+        ],
+        "('default', 'welcome_message', 'W2')": [
+          202,
+          377
         ]
       },
       "caller_id_stats": {
         "D1": [
-          11455,
-          42605
+          11349,
+          42679
         ],
         "D2": [
-          11381,
-          42195
+          11340,
+          42121
         ]
       },
       "hallucination_count": 0,
@@ -59,29 +63,29 @@
       "cohort_stats": {},
       "variant_stats": {
         "('default', 'welcome_message', 'W1')": [
-          11813,
-          46751
+          11251,
+          44794
         ],
         "('default', 'voice', 'V1')": [
-          11252,
-          44386
+          11178,
+          44381
         ],
         "('default', 'caller_id', 'D1')": [
-          11921,
+          11828,
           47199
         ],
         "('default', 'voice', 'V2')": [
-          669,
-          2813
+          650,
+          2818
         ],
         "('default', 'welcome_message', 'W2')": [
-          108,
-          448
+          577,
+          2405
         ]
       },
       "caller_id_stats": {
         "D1": [
-          11921,
+          11828,
           47199
         ]
       },
@@ -95,50 +99,58 @@
       "cohort_stats": {},
       "variant_stats": {
         "('default', 'welcome_message', 'W1')": [
-          11522,
-          23392
+          11805,
+          23831
         ],
         "('default', 'voice', 'V1')": [
-          10806,
-          21883
+          11066,
+          22318
         ],
         "('default', 'caller_id', 'D1')": [
-          6828,
-          14160
+          6920,
+          14163
         ],
         "('default', 'caller_id', 'D2')": [
-          5507,
-          11095
-        ],
-        "('default', 'voice', 'V4')": [
-          496,
-          1069
+          5374,
+          10684
         ],
         "('default', 'voice', 'V3')": [
-          505,
-          1089
+          554,
+          1134
         ],
         "('default', 'voice', 'V2')": [
-          528,
-          1214
+          561,
+          1187
+        ],
+        "('default', 'voice', 'V4')": [
+          675,
+          1425
         ],
         "('default', 'welcome_message', 'W3')": [
-          389,
-          911
+          488,
+          1063
         ],
         "('default', 'welcome_message', 'W2')": [
-          424,
-          952
+          563,
+          1170
+        ],
+        "('default', 'caller_id', 'D3')": [
+          562,
+          1217
         ]
       },
       "caller_id_stats": {
         "D1": [
-          14160,
-          56586
+          14163,
+          56700
         ],
         "D2": [
-          11095,
-          56423
+          10684,
+          51967
+        ],
+        "D3": [
+          1217,
+          4342
         ]
       },
       "hallucination_count": 0,
@@ -148,9 +160,7 @@
       "baseline_halluc_rate": 0.0
     }
   },
-  "pending_approvals": {
-    "nw_renewal": "apr_00032"
-  },
+  "pending_approvals": {},
   "experiments": {},
   "config_versions": {}
 }

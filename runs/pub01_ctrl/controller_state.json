@@ -1,12 +1,58 @@
 {
-  "last_chunk": 108,
-  "last_event_id": 297044,
+  "last_chunk": 110,
+  "last_event_id": 297039,
   "current_ts": "2027-01-12T00:00:00+05:30",
   "workflows": {
     "nw_renewal": {
       "cohort_stats": {},
-      "variant_stats": {},
-      "caller_id_stats": {},
+      "variant_stats": {
+        "('default', 'welcome_message', 'W1')": [
+          9882,
+          18180
+        ],
+        "('default', 'voice', 'V1')": [
+          9766,
+          17874
+        ],
+        "('default', 'caller_id', 'D1')": [
+          5645,
+          10333
+        ],
+        "('default', 'caller_id', 'D2')": [
+          5683,
+          10296
+        ],
+        "('default', 'voice', 'V2')": [
+          501,
+          902
+        ],
+        "('default', 'voice', 'V3')": [
+          485,
+          867
+        ],
+        "('default', 'voice', 'V4')": [
+          576,
+          986
+        ],
+        "('default', 'welcome_message', 'W2')": [
+          1397,
+          2370
+        ],
+        "('default', 'welcome_message', 'W3')": [
+          49,
+          79
+        ]
+      },
+      "caller_id_stats": {
+        "D2": [
+          10296,
+          38684
+        ],
+        "D1": [
+          10333,
+          38930
+        ]
+      },
       "hallucination_count": 0,
       "hallucination_window": [],
       "last_change_ts": null,
@@ -15,8 +61,34 @@
     },
     "nw_kyc": {
       "cohort_stats": {},
-      "variant_stats": {},
-      "caller_id_stats": {},
+      "variant_stats": {
+        "('default', 'welcome_message', 'W1')": [
+          10489,
+          41644
+        ],
+        "('default', 'voice', 'V1')": [
+          10392,
+          41190
+        ],
+        "('default', 'caller_id', 'D1')": [
+          10871,
+          43241
+        ],
+        "('default', 'voice', 'V2')": [
+          479,
+          2051
+        ],
+        "('default', 'welcome_message', 'W2')": [
+          382,
+          1597
+        ]
+      },
+      "caller_id_stats": {
+        "D1": [
+          10871,
+          43241
+        ]
+      },
       "hallucination_count": 0,
       "hallucination_window": [],
       "last_change_ts": null,
@@ -25,8 +97,54 @@
     },
     "ks_cancel": {
       "cohort_stats": {},
-      "variant_stats": {},
-      "caller_id_stats": {},
+      "variant_stats": {
+        "('default', 'welcome_message', 'W1')": [
+          11191,
+          22219
+        ],
+        "('default', 'voice', 'V1')": [
+          11074,
+          21978
+        ],
+        "('default', 'caller_id', 'D1')": [
+          6529,
+          12696
+        ],
+        "('default', 'caller_id', 'D2')": [
+          6529,
+          12938
+        ],
+        "('default', 'voice', 'V2')": [
+          568,
+          1084
+        ],
+        "('default', 'voice', 'V3')": [
+          593,
+          1139
+        ],
+        "('default', 'voice', 'V4')": [
+          823,
+          1433
+        ],
+        "('default', 'welcome_message', 'W2')": [
+          1599,
+          2870
+        ],
+        "('default', 'welcome_message', 'W3')": [
+          268,
+          545
+        ]
+      },
+      "caller_id_stats": {
+        "D2": [
+          12938,
+          51762
+        ],
+        "D1": [
+          12696,
+          51720
+        ]
+      },
       "hallucination_count": 0,
       "hallucination_window": [],
       "last_change_ts": null,

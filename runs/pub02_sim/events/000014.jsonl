@@ -1,1 +1,1 @@
-{"type":"config_changed","ts":"2027-01-05T00:00:00+05:30","workflow_id":"ks_cancel","version":2,"actor":"controller_auto","changed_dims":["voice"],"proposal_id":"8ddf400f-ab72-4e4e-ac45-4cb4f714e247","approval_id":null,"event_id":200956}
+{"type":"config_changed","ts":"2027-01-05T00:00:00+05:30","workflow_id":"ks_cancel","version":2,"actor":"controller_auto","changed_dims":["voice"],"proposal_id":"f45aae20-52ba-45d0-9387-fded494aa86c","approval_id":null,"event_id":200954}

@@ -45,8 +45,8 @@ class IncidentDetector:
         baseline_rate = baseline_halluc / len(baseline_window)
         
         # CUSUM parameters
-        k = 0.003  # Allowance (half the minimum detectable shift)
-        h = 2.5    # Absolute threshold for cumulative deviation
+        k = 0.002  # Allowance (half the minimum detectable shift)
+        h = 1.2    # Absolute threshold for cumulative deviation (lower = faster detection)
         
         # Run CUSUM over recent calls (starting after baseline window)
         cusum = 0.0
