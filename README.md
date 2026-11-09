@@ -1,7 +1,7 @@
 # Outcome-First Agent Loop Controller
 
 **AI Systems Engineer Take-Home Assignment**  
-**Candidate:** Prajwal Jain  
+**Candidate:** Prajwal Waykos  
 **Role:** AI Systems Engineer at Formi / Agentic Universe
 
 ---

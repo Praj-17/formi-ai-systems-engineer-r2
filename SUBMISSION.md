@@ -1,6 +1,6 @@
 # Outcome-First Agent Loop — Submission
 
-**Name:** Prajwal Jain (AI Systems Engineer candidate)  
+**Name:** Prajwal Waykos (AI Systems Engineer candidate)  
 **Date:** Nov 8, 2026  
 **Hours actually spent:** ~8 hours  
 **Language / storage:** Python 3.12 / JSON files on disk
